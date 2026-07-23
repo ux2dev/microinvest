@@ -9,21 +9,21 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Ux2Dev\Microinvest\Config\MicroinvestConfig;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
-use Ux2Dev\Microinvest\Microinvest;
+use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient;
+use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
 
 /**
  * Laravel integration. Resolves connection configuration from
- * `config/microinvest.php` and exposes a lazy, cached {@see Microinvest}
- * instance per connection (each Microinvest install is its own host).
+ * `config/microinvest.php` and exposes a lazy, cached client instance per
+ * connection (each Microinvest install is its own host).
  *
  * Supports immutable connection switching via `->connection('foo')` which
  * clones the manager with the target connection active.
  */
 final class MicroinvestManager
 {
-    /** @var array<string, Microinvest> */
+    /** @var array<string, WarehouseProClient> */
     private array $instances = [];
 
     private string $currentConnection;
@@ -50,7 +50,7 @@ final class MicroinvestManager
         return $this->currentConnection;
     }
 
-    public function client(): Microinvest
+    public function client(): WarehouseProClient
     {
         return $this->instances[$this->currentConnection] ??= $this->build($this->currentConnection);
     }
@@ -65,7 +65,7 @@ final class MicroinvestManager
         return $this->client()->{$method}(...$arguments);
     }
 
-    private function build(string $connection): Microinvest
+    private function build(string $connection): WarehouseProClient
     {
         $connections = (array) ($this->config['connections'] ?? []);
 
@@ -77,7 +77,7 @@ final class MicroinvestManager
 
         $apiKey = $c['api_key'] ?? null;
 
-        $config = new MicroinvestConfig(
+        $config = new WarehouseProConfig(
             baseUrl: (string) ($c['base_url'] ?? ''),
             apiKey:  $apiKey !== null && $apiKey !== '' ? (string) $apiKey : null,
             timeout: (int) ($c['timeout'] ?? 30),
@@ -85,7 +85,7 @@ final class MicroinvestManager
 
         $factory = new HttpFactory();
 
-        return new Microinvest(
+        return new WarehouseProClient(
             $config,
             $this->httpClient ?? new Client(['timeout' => $config->timeout]),
             $this->requestFactory ?? $factory,

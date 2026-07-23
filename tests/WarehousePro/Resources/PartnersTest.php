@@ -10,7 +10,7 @@ use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 it('lists partners with filters', function () {
     $http = FakeHttpClient::withJson([['id' => 3108, 'company' => 'Microinvest EOOD', 'type' => 2]]);
 
-    $list = fakeMicroinvest($http)->partners()->list(company: 'Micro*', type: 2);
+    $list = fakeWarehousePro($http)->partners()->list(company: 'Micro*', type: 2);
 
     $uri = (string) $http->lastRequest()->getUri();
 
@@ -24,7 +24,7 @@ it('lists partners with filters', function () {
 it('gets a single partner by id', function () {
     $http = FakeHttpClient::withJson(['id' => 94, 'company' => 'Acme', 'discount' => '2.50']);
 
-    $partner = fakeMicroinvest($http)->partners()->get(94);
+    $partner = fakeWarehousePro($http)->partners()->get(94);
 
     expect((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/Partner?id=94')
         ->and($partner->id)->toBe(94)
@@ -34,7 +34,7 @@ it('gets a single partner by id', function () {
 it('creates a partner with snake_case keys', function () {
     $http = FakeHttpClient::withJson(['id' => 1, 'company' => 'Retail']);
 
-    fakeMicroinvest($http)->partners()->create(new PartnerInput(
+    fakeWarehousePro($http)->partners()->create(new PartnerInput(
         company: 'Retail',
         vatId: 'BG123',
         priceGroup: 1,
@@ -55,7 +55,7 @@ it('creates a partner with snake_case keys', function () {
 it('updates a partner by id', function () {
     $http = FakeHttpClient::withJson(['id' => 8, 'company' => 'Updated']);
 
-    fakeMicroinvest($http)->partners()->update(8, new PartnerInput(company: 'Updated'));
+    fakeWarehousePro($http)->partners()->update(8, new PartnerInput(company: 'Updated'));
 
     expect($http->lastRequest()->getMethod())->toBe('PUT')
         ->and((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/Partner?id=8');
@@ -64,7 +64,7 @@ it('updates a partner by id', function () {
 it('lists partner groups', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'code' => '-1', 'name' => 'Default']]);
 
-    $groups = fakeMicroinvest($http)->partners()->groups(page: 1, pageSize: 100);
+    $groups = fakeWarehousePro($http)->partners()->groups(page: 1, pageSize: 100);
 
     expect((string) $http->lastRequest()->getUri())->toContain('/PartnersGroups?')
         ->and($groups->first())->toBeInstanceOf(NomenclatureGroupResult::class);

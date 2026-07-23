@@ -10,7 +10,7 @@ use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 it('lists payments by range filters', function () {
     $http = FakeHttpClient::withJson([['id' => 71542, 'operation_type' => 2, 'qtty' => '124.18']]);
 
-    $list = fakeMicroinvest($http)->payments()->list(operationType: 2, dateFrom: '2023-04-01', documentTo: 3000500);
+    $list = fakeWarehousePro($http)->payments()->list(operationType: 2, dateFrom: '2023-04-01', documentTo: 3000500);
 
     $uri = (string) $http->lastRequest()->getUri();
 
@@ -24,7 +24,7 @@ it('lists payments by range filters', function () {
 it('gets payments for one operation', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'operation_type' => 2, 'document_number' => 3000406]]);
 
-    $list = fakeMicroinvest($http)->payments()->get(operationType: 2, documentNumber: 3000406);
+    $list = fakeWarehousePro($http)->payments()->get(operationType: 2, documentNumber: 3000406);
 
     expect((string) $http->lastRequest()->getUri())
         ->toBe('http://127.0.0.1:8700/Payment?operation_type=2&document_number=3000406')
@@ -34,7 +34,7 @@ it('gets payments for one operation', function () {
 it('adds a payment to an existing operation', function () {
     $http = FakeHttpClient::withJson([['id' => 71542, 'operation_type' => 2, 'document_number' => 3000406]]);
 
-    $list = fakeMicroinvest($http)->payments()->create(new PaymentInput(
+    $list = fakeWarehousePro($http)->payments()->create(new PaymentInput(
         operationType: 2,
         documentNumber: 3000406,
         qtty: 124.18,
@@ -65,7 +65,7 @@ it('adds a payment to an existing operation', function () {
 it('lists payment types', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'name' => 'Cash', 'payment_method' => 1]]);
 
-    $types = fakeMicroinvest($http)->payments()->types();
+    $types = fakeWarehousePro($http)->payments()->types();
 
     expect((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/PaymentTypes')
         ->and($types->first())->toBeInstanceOf(PaymentTypeResult::class)

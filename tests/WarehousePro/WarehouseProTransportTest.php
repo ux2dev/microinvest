@@ -11,7 +11,7 @@ use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('builds the url from base url, path and filtered query', function () {
     $http = FakeHttpClient::withJson([]);
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     $transport->request('GET', '/Items', ['name' => 'Cola*', 'code' => null, 'page' => 1]);
 
@@ -22,7 +22,7 @@ it('builds the url from base url, path and filtered query', function () {
 
 it('omits the query string when no filters are set', function () {
     $http = FakeHttpClient::withJson([]);
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     $transport->request('GET', '/VATGroups', ['page' => null]);
 
@@ -31,7 +31,7 @@ it('omits the query string when no filters are set', function () {
 
 it('sends the X-API-Key header when a key is configured', function () {
     $http = FakeHttpClient::withJson([]);
-    $transport = fakeMicroinvest($http, apiKey: 'my-token')->transport;
+    $transport = fakeWarehousePro($http, apiKey: 'my-token')->transport;
 
     $transport->request('GET', '/Items');
 
@@ -41,7 +41,7 @@ it('sends the X-API-Key header when a key is configured', function () {
 
 it('omits the X-API-Key header for anonymous access', function () {
     $http = FakeHttpClient::withJson([]);
-    $transport = fakeMicroinvest($http, apiKey: null)->transport;
+    $transport = fakeWarehousePro($http, apiKey: null)->transport;
 
     $transport->request('GET', '/Items');
 
@@ -50,7 +50,7 @@ it('omits the X-API-Key header for anonymous access', function () {
 
 it('encodes a JSON body and sets the content type for writes', function () {
     $http = FakeHttpClient::withJson([]);
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     $transport->request('POST', '/Item', [], ['name' => 'Cola', 'price_in' => 1.5]);
 
@@ -63,7 +63,7 @@ it('encodes a JSON body and sets the content type for writes', function () {
 
 it('reads the paging headers into the envelope', function () {
     $http = FakeHttpClient::withJson([], headers: ['X-CurrentPage' => '3', 'X-TotalPages' => '42']);
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     $env = $transport->request('GET', '/Items');
 
@@ -72,7 +72,7 @@ it('reads the paging headers into the envelope', function () {
 });
 
 it('leaves paging metadata null when headers are absent', function () {
-    $env = fakeMicroinvest(FakeHttpClient::withJson([]))->transport->request('GET', '/Items');
+    $env = fakeWarehousePro(FakeHttpClient::withJson([]))->transport->request('GET', '/Items');
 
     expect($env['currentPage'])->toBeNull()
         ->and($env['totalPages'])->toBeNull();
@@ -80,38 +80,38 @@ it('leaves paging metadata null when headers are absent', function () {
 
 it('wraps PSR-18 client failures in a TransportException', function () {
     $http = FakeHttpClient::throwing(new FakeClientException('connection refused'));
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     $transport->request('GET', '/Items');
 })->throws(TransportException::class, 'HTTP transport error');
 
 it('throws when the request body cannot be encoded', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withJson([]))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withJson([]))->transport;
 
     $transport->request('POST', '/Item', [], ['bad' => NAN]);
 })->throws(InvalidResponseException::class, 'Failed to encode request body');
 
 it('throws on malformed JSON', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withRaw('{not json'))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withRaw('{not json'))->transport;
 
     $transport->request('GET', '/Items');
 })->throws(InvalidResponseException::class, 'Malformed JSON');
 
 it('throws when a success body is not an array or object', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withRaw('"hello"'))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withRaw('"hello"'))->transport;
 
     $transport->request('GET', '/Items');
 })->throws(InvalidResponseException::class, 'Expected a JSON array or object');
 
 it('throws on an empty success body', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withRaw(''))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withRaw(''))->transport;
 
     $transport->request('GET', '/Items');
 })->throws(InvalidResponseException::class, 'Expected a JSON array or object');
 
 it('maps a wrapped error envelope to an ApiException', function () {
     $http = FakeHttpClient::withJson(['error' => ['code' => 5, 'message' => 'Value not found: id.']], status: 404);
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     try {
         $transport->request('GET', '/Item', ['id' => 999]);
@@ -127,7 +127,7 @@ it('maps a wrapped error envelope to an ApiException', function () {
 
 it('maps a bare error body to an ApiException', function () {
     $http = FakeHttpClient::withJson(['code' => 3, 'message' => 'Invalid value: operation_type.'], status: 400);
-    $transport = fakeMicroinvest($http)->transport;
+    $transport = fakeWarehousePro($http)->transport;
 
     try {
         $transport->request('GET', '/Operations');
@@ -140,7 +140,7 @@ it('maps a bare error body to an ApiException', function () {
 });
 
 it('falls back to a generic message for an error without a body', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withRaw('', status: 500))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withRaw('', status: 500))->transport;
 
     try {
         $transport->request('GET', '/Items');
@@ -157,7 +157,7 @@ it('hydrates a list response via requestList', function () {
         [['id' => 1, 'name' => 'A'], ['id' => 2, 'name' => 'B']],
         headers: ['X-CurrentPage' => '1', 'X-TotalPages' => '1'],
     );
-    $list = fakeMicroinvest($http)->transport->requestList('GET', '/Items', [], ItemResult::class);
+    $list = fakeWarehousePro($http)->transport->requestList('GET', '/Items', [], ItemResult::class);
 
     expect($list->count())->toBe(2)
         ->and($list->first())->toBeInstanceOf(ItemResult::class)
@@ -165,19 +165,19 @@ it('hydrates a list response via requestList', function () {
 });
 
 it('rejects an object where a list is expected', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withJson(['id' => 1]))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withJson(['id' => 1]))->transport;
 
     $transport->requestList('GET', '/Items', [], ItemResult::class);
 })->throws(InvalidResponseException::class, 'Expected a JSON array');
 
 it('rejects a scalar row inside a list', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withJson([1, 2]))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withJson([1, 2]))->transport;
 
     $transport->requestList('GET', '/Items', [], ItemResult::class);
 })->throws(InvalidResponseException::class, 'must be an object');
 
 it('hydrates a single object via requestOne', function () {
-    $item = fakeMicroinvest(FakeHttpClient::withJson(['id' => 7, 'name' => 'Solo']))
+    $item = fakeWarehousePro(FakeHttpClient::withJson(['id' => 7, 'name' => 'Solo']))
         ->transport->requestOne('GET', '/Item', ['id' => 7], null, ItemResult::class);
 
     expect($item)->toBeInstanceOf(ItemResult::class)
@@ -185,7 +185,7 @@ it('hydrates a single object via requestOne', function () {
 });
 
 it('rejects an array where a single object is expected', function () {
-    $transport = fakeMicroinvest(FakeHttpClient::withJson([['id' => 1]]))->transport;
+    $transport = fakeWarehousePro(FakeHttpClient::withJson([['id' => 1]]))->transport;
 
     $transport->requestOne('GET', '/Item', [], null, ItemResult::class);
 })->throws(InvalidResponseException::class, 'got an array');

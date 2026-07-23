@@ -9,7 +9,7 @@ use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 it('lists operations by type and period', function () {
     $http = FakeHttpClient::withJson([['id' => 80306, 'operation_type' => 2, 'document_number' => 3000106]]);
 
-    $list = fakeMicroinvest($http)->operations()->list(
+    $list = fakeWarehousePro($http)->operations()->list(
         operationType: 2,
         objectId: 4,
         dateFrom: '2023-04-03',
@@ -32,7 +32,7 @@ it('lists operations by type and period', function () {
 it('gets an operation by type and document number', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'operation_type' => 2, 'document_number' => 3000106, 'sign' => -1]]);
 
-    $list = fakeMicroinvest($http)->operations()->get(operationType: 2, documentNumber: 3000106);
+    $list = fakeWarehousePro($http)->operations()->get(operationType: 2, documentNumber: 3000106);
 
     expect((string) $http->lastRequest()->getUri())
         ->toBe('http://127.0.0.1:8700/Operation?operation_type=2&document_number=3000106')
@@ -44,7 +44,7 @@ it('creates an operation from an array of input rows', function () {
         ['id' => 80306, 'operation_type' => 2, 'document_number' => 3000106, 'good_id' => '66'],
     ]);
 
-    $list = fakeMicroinvest($http)->operations()->create([
+    $list = fakeWarehousePro($http)->operations()->create([
         new OperationInput(operationType: 2, goodId: '66', objectId: 2, qtty: 1.0, priceOut: 7.29, date: '2023-04-07', userId: 2),
         new OperationInput(goodId: '66', qtty: 0.745, priceOut: 12.5906),
     ]);

@@ -2,32 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Ux2Dev\Microinvest;
+namespace Ux2Dev\Microinvest\WarehousePro;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Ux2Dev\Microinvest\Config\MicroinvestConfig;
-use Ux2Dev\Microinvest\Http\MicroinvestTransport;
-use Ux2Dev\Microinvest\Resources\Documents;
-use Ux2Dev\Microinvest\Resources\Items;
-use Ux2Dev\Microinvest\Resources\Locations;
-use Ux2Dev\Microinvest\Resources\Operations;
-use Ux2Dev\Microinvest\Resources\Partners;
-use Ux2Dev\Microinvest\Resources\Payments;
-use Ux2Dev\Microinvest\Resources\Store;
-use Ux2Dev\Microinvest\Resources\Users;
-use Ux2Dev\Microinvest\Resources\VatGroups;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Documents;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Items;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Locations;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Operations;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Partners;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Payments;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Store;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Users;
+use Ux2Dev\Microinvest\WarehousePro\Resources\VatGroups;
 
 /**
- * Framework-agnostic entry point for the Microinvest Warehouse Pro SDK.
+ * Client for the Microinvest Warehouse Pro REST API, exposed by the Microinvest
+ * Utility Center on each on-premise host.
  *
  * Instantiate once per host with a PSR-18 client + PSR-17 factories, then
- * dispatch requests via the resource accessors ($microinvest->items(), etc.).
+ * dispatch requests via the resource accessors ($client->items(), etc.).
  */
-final class Microinvest
+final class WarehouseProClient
 {
-    public readonly MicroinvestTransport $transport;
+    public readonly WarehouseProTransport $transport;
 
     private ?Items $items = null;
     private ?Partners $partners = null;
@@ -40,12 +39,12 @@ final class Microinvest
     private ?VatGroups $vatGroups = null;
 
     public function __construct(
-        MicroinvestConfig $config,
+        WarehouseProConfig $config,
         ClientInterface $httpClient,
         RequestFactoryInterface $requestFactory,
         StreamFactoryInterface $streamFactory,
     ) {
-        $this->transport = new MicroinvestTransport($config, $httpClient, $requestFactory, $streamFactory);
+        $this->transport = new WarehouseProTransport($config, $httpClient, $requestFactory, $streamFactory);
     }
 
     public function items(): Items

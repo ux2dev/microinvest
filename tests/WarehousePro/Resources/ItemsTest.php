@@ -13,7 +13,7 @@ it('lists items with filters and paging', function () {
         headers: ['X-CurrentPage' => '1', 'X-TotalPages' => '5'],
     );
 
-    $list = fakeMicroinvest($http)->items()->list(name: 'Cola*', groupId: 8, pageSize: 200);
+    $list = fakeWarehousePro($http)->items()->list(name: 'Cola*', groupId: 8, pageSize: 200);
 
     $uri = (string) $http->lastRequest()->getUri();
 
@@ -31,7 +31,7 @@ it('lists items with filters and paging', function () {
 it('passes arbitrary wire filters through the escape hatch', function () {
     $http = FakeHttpClient::withJson([]);
 
-    fakeMicroinvest($http)->items()->list(
+    fakeWarehousePro($http)->items()->list(
         name: 'Cola*',
         filters: ['barcode2' => '3800', 'is_very_used' => 'true'],
     );
@@ -46,7 +46,7 @@ it('passes arbitrary wire filters through the escape hatch', function () {
 it('lets an escape-hatch filter override a named argument', function () {
     $http = FakeHttpClient::withJson([]);
 
-    fakeMicroinvest($http)->items()->list(type: 0, filters: ['type' => 3]);
+    fakeWarehousePro($http)->items()->list(type: 0, filters: ['type' => 3]);
 
     expect((string) $http->lastRequest()->getUri())->toContain('type=3')
         ->and((string) $http->lastRequest()->getUri())->not->toContain('type=0');
@@ -55,7 +55,7 @@ it('lets an escape-hatch filter override a named argument', function () {
 it('gets a single item by id', function () {
     $http = FakeHttpClient::withJson(['id' => 2518, 'name' => 'Item', 'type' => 0]);
 
-    $item = fakeMicroinvest($http)->items()->get(2518);
+    $item = fakeWarehousePro($http)->items()->get(2518);
 
     expect((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/Item?id=2518')
         ->and($item->id)->toBe(2518)
@@ -65,7 +65,7 @@ it('gets a single item by id', function () {
 it('creates an item with a snake_case body', function () {
     $http = FakeHttpClient::withJson(['id' => 99, 'name' => 'New']);
 
-    $item = fakeMicroinvest($http)->items()->create(new ItemInput(
+    $item = fakeWarehousePro($http)->items()->create(new ItemInput(
         name: 'New',
         priceOut1: 5.0,
         taxGroup: 1,
@@ -88,7 +88,7 @@ it('creates an item with a snake_case body', function () {
 it('updates an item by id', function () {
     $http = FakeHttpClient::withJson(['id' => 5, 'name' => 'Renamed']);
 
-    $item = fakeMicroinvest($http)->items()->update(5, new ItemInput(name: 'Renamed'));
+    $item = fakeWarehousePro($http)->items()->update(5, new ItemInput(name: 'Renamed'));
 
     $request = $http->lastRequest();
 
@@ -101,7 +101,7 @@ it('updates an item by id', function () {
 it('lists item groups', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'code' => '-1', 'name' => 'Default Group']]);
 
-    $groups = fakeMicroinvest($http)->items()->groups();
+    $groups = fakeWarehousePro($http)->items()->groups();
 
     expect((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/ItemsGroups')
         ->and($groups->first())->toBeInstanceOf(NomenclatureGroupResult::class)

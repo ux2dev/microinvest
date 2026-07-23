@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 use Ux2Dev\Microinvest\Laravel\Facades\Microinvest;
 use Ux2Dev\Microinvest\Laravel\MicroinvestManager;
-use Ux2Dev\Microinvest\Microinvest as MicroinvestClient;
-use Ux2Dev\Microinvest\Resources\Items;
+use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient as MicroinvestClient;
+use Ux2Dev\Microinvest\WarehousePro\Resources\Items;
 
 it('resolves the manager from the container', function () {
     expect(app(MicroinvestManager::class))->toBeInstanceOf(MicroinvestManager::class)

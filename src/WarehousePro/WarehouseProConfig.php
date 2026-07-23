@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ux2Dev\Microinvest\Config;
+namespace Ux2Dev\Microinvest\WarehousePro;
 
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 
@@ -11,7 +11,7 @@ use Ux2Dev\Microinvest\Exception\ConfigurationException;
  * Utility Center host. The API key is optional; when omitted the API is
  * reached anonymously.
  */
-final readonly class MicroinvestConfig
+final readonly class WarehouseProConfig
 {
     public string $baseUrl;
 
@@ -58,13 +58,13 @@ final readonly class MicroinvestConfig
     public function __serialize(): array
     {
         throw new \LogicException(
-            'MicroinvestConfig must not be serialized as it may contain an API key'
+            'WarehouseProConfig must not be serialized as it may contain an API key'
         );
     }
 
     /** @param array<string, mixed> $data */
     public function __unserialize(array $data): void
     {
-        throw new \LogicException('MicroinvestConfig must not be unserialized');
+        throw new \LogicException('WarehouseProConfig must not be unserialized');
     }
 }

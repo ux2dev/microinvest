@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ux2Dev\Microinvest\Resources;
+namespace Ux2Dev\Microinvest\WarehousePro\Resources;
 
 use Ux2Dev\Microinvest\Dto\Input\Partners\PartnerInput;
 use Ux2Dev\Microinvest\Dto\Result\NomenclatureGroupResult;

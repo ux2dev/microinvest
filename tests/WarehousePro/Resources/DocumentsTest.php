@@ -10,7 +10,7 @@ use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 it('lists documents with invoice range filters', function () {
     $http = FakeHttpClient::withJson([['id' => 71542, 'document_number' => 300053, 'invoice_number' => '0000300015']]);
 
-    $list = fakeMicroinvest($http)->documents()->list(
+    $list = fakeWarehousePro($http)->documents()->list(
         dateFrom: '2023-04-03',
         invoiceNumberFrom: '0000200100',
         invoiceNumberTo: '0000200108',
@@ -27,7 +27,7 @@ it('lists documents with invoice range filters', function () {
 it('gets a single document', function () {
     $http = FakeHttpClient::withJson(['id' => 1, 'document_number' => 300053, 'invoice_number' => '0000300015', 'document_type' => 0]);
 
-    $document = fakeMicroinvest($http)->documents()->get(
+    $document = fakeWarehousePro($http)->documents()->get(
         operationType: 2,
         documentNumber: 300053,
         documentType: 0,
@@ -47,7 +47,7 @@ it('gets a single document', function () {
 it('creates a document', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'document_number' => 300053, 'invoice_number' => '0000300015']]);
 
-    $list = fakeMicroinvest($http)->documents()->create(new DocumentInput(
+    $list = fakeWarehousePro($http)->documents()->create(new DocumentInput(
         documentNumber: 300053,
         invoiceNumber: '0000300015',
         operationType: 2,
@@ -72,5 +72,5 @@ it('creates a document', function () {
 it('surfaces a 409 conflict as an ApiException', function () {
     $http = FakeHttpClient::withJson(['code' => 3, 'message' => 'Operation already contains document.'], status: 409);
 
-    fakeMicroinvest($http)->documents()->create(new DocumentInput(documentNumber: 300053));
+    fakeWarehousePro($http)->documents()->create(new DocumentInput(documentNumber: 300053));
 })->throws(ApiException::class, 'Operation already contains document.');

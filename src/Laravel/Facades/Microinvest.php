@@ -10,16 +10,16 @@ use Ux2Dev\Microinvest\Laravel\MicroinvestManager;
 /**
  * @method static MicroinvestManager connection(string $name)
  * @method static string currentConnection()
- * @method static \Ux2Dev\Microinvest\Microinvest client()
- * @method static \Ux2Dev\Microinvest\Resources\Items items()
- * @method static \Ux2Dev\Microinvest\Resources\Partners partners()
- * @method static \Ux2Dev\Microinvest\Resources\Users users()
- * @method static \Ux2Dev\Microinvest\Resources\Locations locations()
- * @method static \Ux2Dev\Microinvest\Resources\Operations operations()
- * @method static \Ux2Dev\Microinvest\Resources\Store store()
- * @method static \Ux2Dev\Microinvest\Resources\Payments payments()
- * @method static \Ux2Dev\Microinvest\Resources\Documents documents()
- * @method static \Ux2Dev\Microinvest\Resources\VatGroups vatGroups()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\WarehouseProClient client()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Items items()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Partners partners()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Users users()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Locations locations()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Operations operations()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Store store()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Payments payments()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Documents documents()
+ * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\VatGroups vatGroups()
  */
 final class Microinvest extends Facade
 {

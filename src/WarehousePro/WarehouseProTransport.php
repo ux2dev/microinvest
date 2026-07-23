@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ux2Dev\Microinvest\Http;
+namespace Ux2Dev\Microinvest\WarehousePro;
 
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -10,21 +10,21 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Ux2Dev\Microinvest\Config\MicroinvestConfig;
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
 use Ux2Dev\Microinvest\Exception\ApiException;
 use Ux2Dev\Microinvest\Exception\InvalidResponseException;
 use Ux2Dev\Microinvest\Exception\TransportException;
+use Ux2Dev\Microinvest\Http\ResultList;
 
 /**
  * Low-level HTTP transport for the Microinvest Warehouse Pro REST API.
  * Resources build the path, query and (optional) body and call one of the
  * public helpers.
  */
-final class MicroinvestTransport
+final class WarehouseProTransport
 {
     public function __construct(
-        public readonly MicroinvestConfig $config,
+        public readonly WarehouseProConfig $config,
         private readonly ClientInterface $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
         private readonly StreamFactoryInterface $streamFactory,

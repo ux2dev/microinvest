@@ -11,7 +11,7 @@ use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('lists users and user groups', function () {
     $http = FakeHttpClient::withJson([['id' => 2, 'name' => 'John Smith', 'userlevel' => 3]]);
-    $mi = fakeMicroinvest($http);
+    $mi = fakeWarehousePro($http);
 
     $users = $mi->users()->list(name: 'John*');
     expect((string) $http->lastRequest()->getUri())->toContain('/Users?name=John%2A')
@@ -24,7 +24,7 @@ it('lists users and user groups', function () {
 
 it('lists locations and location groups', function () {
     $http = FakeHttpClient::withJson([['id' => 2, 'name' => 'Office Sofia', 'is_very_used' => true]]);
-    $mi = fakeMicroinvest($http);
+    $mi = fakeWarehousePro($http);
 
     $locations = $mi->locations()->list(groupId: 3);
     expect((string) $http->lastRequest()->getUri())->toContain('/Locations?group_id=3')
@@ -38,7 +38,7 @@ it('lists locations and location groups', function () {
 it('lists stock by location', function () {
     $http = FakeHttpClient::withJson([['id' => 72253, 'object_id' => 2, 'good_id' => '5140', 'qtty' => '1.230', 'price' => '103.33']]);
 
-    $store = fakeMicroinvest($http)->store()->list(objectId: 4, page: 1, pageSize: 2000);
+    $store = fakeWarehousePro($http)->store()->list(objectId: 4, page: 1, pageSize: 2000);
 
     $uri = (string) $http->lastRequest()->getUri();
 
@@ -52,7 +52,7 @@ it('lists stock by location', function () {
 it('lists VAT groups', function () {
     $http = FakeHttpClient::withJson([['id' => 1, 'code' => '1', 'name' => 'Primary VAT', 'vat_value' => '20.00']]);
 
-    $groups = fakeMicroinvest($http)->vatGroups()->list();
+    $groups = fakeWarehousePro($http)->vatGroups()->list();
 
     expect((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/VATGroups')
         ->and($groups->first())->toBeInstanceOf(VatGroupResult::class)
