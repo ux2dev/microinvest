@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationInput;
 use Ux2Dev\Microinvest\Dto\Result\Operations\OperationResult;
+use Ux2Dev\Microinvest\Enum\StockSign;
 use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('lists operations by type and period', function () {
@@ -36,7 +37,7 @@ it('gets an operation by type and document number', function () {
 
     expect((string) $http->lastRequest()->getUri())
         ->toBe('http://127.0.0.1:8700/Operation?operation_type=2&document_number=3000106')
-        ->and($list->first()->sign)->toBe(-1);
+        ->and($list->first()->sign)->toBe(StockSign::Out);
 });
 
 it('creates an operation from an array of input rows', function () {

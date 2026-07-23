@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Result\Payments;
 
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+use Ux2Dev\Microinvest\Enum\StockSign;
 
 /**
  * A payment row (table payments).
@@ -18,7 +19,7 @@ final class PaymentResult implements FromWarehousePro
         public readonly ?int $partnerId,
         public readonly ?float $qtty,
         public readonly ?int $mode,
-        public readonly ?int $sign,
+        public readonly ?StockSign $sign,
         public readonly ?string $date,
         public readonly ?int $userId,
         public readonly ?int $objectId,
@@ -39,7 +40,7 @@ final class PaymentResult implements FromWarehousePro
             partnerId: isset($data['partner_id']) ? (int) $data['partner_id'] : null,
             qtty: isset($data['qtty']) ? (float) $data['qtty'] : null,
             mode: isset($data['mode']) ? (int) $data['mode'] : null,
-            sign: isset($data['sign']) ? (int) $data['sign'] : null,
+            sign: isset($data['sign']) ? StockSign::tryFrom((int) $data['sign']) : null,
             date: isset($data['date']) ? (string) $data['date'] : null,
             userId: isset($data['user_id']) ? (int) $data['user_id'] : null,
             objectId: isset($data['object_id']) ? (int) $data['object_id'] : null,

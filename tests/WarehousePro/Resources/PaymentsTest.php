@@ -6,6 +6,7 @@ use Ux2Dev\Microinvest\Dto\Input\Payments\PaymentInput;
 use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentResult;
 use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentTypeResult;
 use Ux2Dev\Microinvest\Enum\PaymentMethod;
+use Ux2Dev\Microinvest\Enum\StockSign;
 use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('lists payments by range filters', function () {
@@ -40,7 +41,7 @@ it('adds a payment to an existing operation', function () {
         documentNumber: 3000406,
         qtty: 124.18,
         mode: 1,
-        sign: -1,
+        sign: StockSign::Out,
         date: '2023-04-13',
         userId: 8,
         paymentType: 3,

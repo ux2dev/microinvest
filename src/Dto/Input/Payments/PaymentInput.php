@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Input\Payments;
 
 use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
+use Ux2Dev\Microinvest\Enum\StockSign;
 
 /**
  * Input DTO for POST /Payment (add a payment to an existing operation).
@@ -18,7 +19,7 @@ final readonly class PaymentInput implements ToWarehousePro
         public ?int $partnerId = null,
         public ?float $qtty = null,
         public ?int $mode = null,
-        public ?int $sign = null,
+        public ?StockSign $sign = null,
         public ?string $date = null,
         public ?int $userId = null,
         public ?int $objectId = null,
@@ -37,7 +38,7 @@ final readonly class PaymentInput implements ToWarehousePro
         if ($this->partnerId !== null) $out['partner_id'] = $this->partnerId;
         if ($this->qtty !== null) $out['qtty'] = $this->qtty;
         if ($this->mode !== null) $out['mode'] = $this->mode;
-        if ($this->sign !== null) $out['sign'] = $this->sign;
+        if ($this->sign !== null) $out['sign'] = $this->sign->value;
         if ($this->date !== null) $out['date'] = $this->date;
         if ($this->userId !== null) $out['user_id'] = $this->userId;
         if ($this->objectId !== null) $out['object_id'] = $this->objectId;

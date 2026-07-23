@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Result\Operations;
 
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+use Ux2Dev\Microinvest\Enum\StockSign;
 
 /**
  * An operation row (table operations).
@@ -22,7 +23,7 @@ final class OperationResult implements FromWarehousePro
         public readonly ?int $toObjectId,
         public readonly ?int $operatorId,
         public readonly ?float $qtty,
-        public readonly ?int $sign,
+        public readonly ?StockSign $sign,
         public readonly ?float $priceIn,
         public readonly ?float $priceOut,
         public readonly ?float $vatIn,
@@ -49,7 +50,7 @@ final class OperationResult implements FromWarehousePro
             toObjectId: isset($data['to_object_id']) ? (int) $data['to_object_id'] : null,
             operatorId: isset($data['operator_id']) ? (int) $data['operator_id'] : null,
             qtty: isset($data['qtty']) ? (float) $data['qtty'] : null,
-            sign: isset($data['sign']) ? (int) $data['sign'] : null,
+            sign: isset($data['sign']) ? StockSign::tryFrom((int) $data['sign']) : null,
             priceIn: isset($data['price_in']) ? (float) $data['price_in'] : null,
             priceOut: isset($data['price_out']) ? (float) $data['price_out'] : null,
             vatIn: isset($data['vat_in']) ? (float) $data['vat_in'] : null,
