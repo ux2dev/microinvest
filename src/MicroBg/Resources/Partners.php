@@ -76,7 +76,7 @@ final class Partners extends Resource implements PartnerRepository
 
     /**
      * Physical delete when the partner is unused, logical otherwise
-     * (Deleted becomes 1). micro.bg only — Warehouse Pro exposes no delete.
+     * (Deleted becomes 1). micro.bg only - Warehouse Pro exposes no delete.
      */
     public function delete(int $id): void
     {

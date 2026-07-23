@@ -11,7 +11,7 @@ use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;
  * operation. micro.bg only.
  *
  * Identify the operation either by its micro.bg id or by the external
- * application's own extAppDocId — not both.
+ * application's own extAppDocId - not both.
  */
 final readonly class InvoiceInput implements ToMicroBg
 {

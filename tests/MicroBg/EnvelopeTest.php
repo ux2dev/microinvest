@@ -53,6 +53,23 @@ it('stringifies non-string error entries', function () {
         ->toThrow(ApiException::class, '{"code":7}');
 });
 
+it('reads a real rejection from micro.bg', function () {
+    // Captured from a live call on 2026-07-23. Confirms three things the PDF
+    // left ambiguous: the ok flag is spelled `status` (not `success`), it is a
+    // real boolean, and `errors` is a list of plain strings.
+    $envelope = ['status' => false, 'errors' => ['_INVALID_API_ID'], 'data' => null];
+
+    try {
+        Envelope::unwrap($envelope, 'getCompanyData');
+        expect()->fail('the envelope should have been rejected');
+    } catch (ApiException $e) {
+        expect($e->getMessage())->toBe('_INVALID_API_ID')
+            ->and($e->apiMessage)->toBe('_INVALID_API_ID')
+            ->and($e->httpStatus)->toBe(200)
+            ->and($e->body['data'])->toBeNull();
+    }
+});
+
 it('rejects an envelope with neither flag', function () {
     expect(fn () => Envelope::unwrap(['data' => []], 'getItems'))
         ->toThrow(InvalidResponseException::class, 'neither a status nor a success flag');

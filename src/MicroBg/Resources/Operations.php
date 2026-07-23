@@ -10,7 +10,7 @@ use Ux2Dev\Microinvest\Exception\ConfigurationException;
 use Ux2Dev\Microinvest\Http\ResultList;
 
 /**
- * Sales, orders, deliveries, claims and notes. micro.bg only — Warehouse Pro
+ * Sales, orders, deliveries, claims and notes. micro.bg only - Warehouse Pro
  * models operations as flat rows and is not interchangeable here.
  */
 final class Operations extends Resource

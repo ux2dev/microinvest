@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Добавя `src/MicroBg/` — подписан RPC транспорт срещу micro.bg External App API — и разширява споделените DTO-та с micro.bg диалекта, така че `MicroBgClient implements Contracts\Client`.
+**Goal:** Добавя `src/MicroBg/` - подписан RPC транспорт срещу micro.bg External App API - и разширява споделените DTO-та с micro.bg диалекта, така че `MicroBgClient implements Contracts\Client`.
 
-**Architecture:** `MicroBgConfig` (apiId + secretKey) → `RequestSigner` (json→base64→urlencode→HMAC) → `MicroBgTransport::call()` → `Envelope::unwrap()` → същите `Dto/Result/*` класове, хидратирани през `fromMicroBg()`. Ресурсите са един клас на група методи, както при Warehouse Pro. Двата backend-а не споделят нито ред транспортен код — споделят DTO-та, `ResultList`, изключения и контракти.
+**Architecture:** `MicroBgConfig` (apiId + secretKey) → `RequestSigner` (json→base64→urlencode→HMAC) → `MicroBgTransport::call()` → `Envelope::unwrap()` → същите `Dto/Result/*` класове, хидратирани през `fromMicroBg()`. Ресурсите са един клас на група методи, както при Warehouse Pro. Двата backend-а не споделят нито ред транспортен код - споделят DTO-та, `ResultList`, изключения и контракти.
 
 **Tech Stack:** PHP 8.2+, PSR-18 + PSR-17 (инжектирани), Pest 4, PCOV в CI.
 
@@ -12,9 +12,9 @@
 
 - PHP `>=8.2`; всеки файл започва с `declare(strict_types=1);`
 - Всички конкретни класове са `final`; Input DTO-тата остават `readonly`
-- PSR-18/PSR-17 се инжектират — никакъв discovery
+- PSR-18/PSR-17 се инжектират - никакъв discovery
 - Никакви нови зависимости в `require`
-- Покритието трябва да остане 100% (`composer test:coverage` в CI); локално не се мери — няма Xdebug/PCOV
+- Покритието трябва да остане 100% (`composer test:coverage` в CI); локално не се мери - няма Xdebug/PCOV
 - Работи се в клон `feat/micro-bg-transport`
 - **Пише се срещу `Api_v1.4.pdf`, без реален акаунт.** Всяко място, където PDF-ът е двусмислен, се имплементира защитно и се коментира в кода с `// PDF v1.4: ...`
 
@@ -93,7 +93,7 @@ it('refuses to be serialized', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroBg/MicroBgConfigTest.php`
-Expected: FAIL — `Class "Ux2Dev\Microinvest\MicroBg\MicroBgConfig" not found`
+Expected: FAIL - `Class "Ux2Dev\Microinvest\MicroBg\MicroBgConfig" not found`
 
 - [ ] **Step 3: Write the implementation**
 
@@ -177,7 +177,7 @@ final readonly class MicroBgConfig
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `vendor/bin/pest tests/MicroBg/MicroBgConfigTest.php`
-Expected: PASS (7 tests — 2 + 4 dataset rows + 1)
+Expected: PASS (7 tests - 2 + 4 dataset rows + 1)
 
 - [ ] **Step 5: Commit**
 
@@ -246,7 +246,7 @@ it('keeps float prices as floats on the wire', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroBg/RequestSignerTest.php`
-Expected: FAIL — `Class "Ux2Dev\Microinvest\MicroBg\RequestSigner" not found`
+Expected: FAIL - `Class "Ux2Dev\Microinvest\MicroBg\RequestSigner" not found`
 
 - [ ] **Step 3: Write the implementation**
 
@@ -384,7 +384,7 @@ it('rejects an envelope with neither flag', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroBg/EnvelopeTest.php`
-Expected: FAIL — `Class "Ux2Dev\Microinvest\MicroBg\Envelope" not found`
+Expected: FAIL - `Class "Ux2Dev\Microinvest\MicroBg\Envelope" not found`
 
 - [ ] **Step 3: Write the implementation**
 
@@ -463,7 +463,7 @@ final class Envelope
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `vendor/bin/pest tests/MicroBg/EnvelopeTest.php`
-Expected: PASS (8 tests — 3 dataset rows + 5)
+Expected: PASS (8 tests - 3 dataset rows + 5)
 
 - [ ] **Step 5: Commit**
 
@@ -582,7 +582,7 @@ it('rejects a body that is not a json object', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroBg/MicroBgTransportTest.php`
-Expected: FAIL — `Class "Ux2Dev\Microinvest\MicroBg\MicroBgTransport" not found`
+Expected: FAIL - `Class "Ux2Dev\Microinvest\MicroBg\MicroBgTransport" not found`
 
 - [ ] **Step 3: Write the implementation**
 
@@ -732,7 +732,7 @@ final class MicroBgTransport
 - [ ] **Step 4: Run the transport test**
 
 Run: `vendor/bin/pest tests/MicroBg/MicroBgTransportTest.php`
-Expected: PASS (8 tests). The `use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;` line refers to an interface that only arrives in Task 5, but a `use` statement is not an autoload trigger — it is only resolved where the name is actually used, and here that is a docblock. Nothing to stub.
+Expected: PASS (8 tests). The `use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;` line refers to an interface that only arrives in Task 5, but a `use` statement is not an autoload trigger - it is only resolved where the name is actually used, and here that is a docblock. Nothing to stub.
 
 - [ ] **Step 5: Commit**
 
@@ -774,27 +774,27 @@ git commit -m "feat: add micro.bg transport"
 
 **Мапинги `fromMicroBg()`** (ляво = wire ключ от PDF, дясно = свойство):
 
-`PartnerResult` — `id→id`, `Code→code`, `Name→company`, `MOL→mol`, `City→city`, `Address→address`, `Phone→phone`, `eMail→email`, `TaxID→taxId`, `VatID→vatId`, `PriceGroup→priceGroup`, `Discount→discount`, `PartnerType→type`, `CardNumber→cardNumber`, `GroupId→groupId`, `Deleted→deleted`, `ContactPerson→contactPerson`, `PartnerNote→partnerNote`, `GroupName→groupName`, `GroupPath→groupPath`, `DateUpdated→dateUpdated`. Всички Warehouse-only полета остават `null`.
+`PartnerResult` - `id→id`, `Code→code`, `Name→company`, `MOL→mol`, `City→city`, `Address→address`, `Phone→phone`, `eMail→email`, `TaxID→taxId`, `VatID→vatId`, `PriceGroup→priceGroup`, `Discount→discount`, `PartnerType→type`, `CardNumber→cardNumber`, `GroupId→groupId`, `Deleted→deleted`, `ContactPerson→contactPerson`, `PartnerNote→partnerNote`, `GroupName→groupName`, `GroupPath→groupPath`, `DateUpdated→dateUpdated`. Всички Warehouse-only полета остават `null`.
 
-`ItemResult` — `id→id`, `Code→code`, `Name→name`, `Barcode→barcode1`, `GroupId→groupId`, `GroupName→groupName`, `GroupPath→groupPath`, `NotStorable→notStorable`, `TaxGroup→taxGroup`, `TaxValue→taxValue`, `MeasureName→measure1`, `MeasureId→measureId`, `PriceIn→priceIn`, `PriceOut1..PriceOut10→priceOut1..priceOut10`, `Deleted→deleted`, `Description→description`, `WarrantyMonths→warrantyMonths`, `WarrantyDays→warrantyDays`, `DateUpdated→dateUpdated`, `AddCodes[]→addCodes` (всеки ред през `ItemAddCodeResult::fromMicroBg()`).
+`ItemResult` - `id→id`, `Code→code`, `Name→name`, `Barcode→barcode1`, `GroupId→groupId`, `GroupName→groupName`, `GroupPath→groupPath`, `NotStorable→notStorable`, `TaxGroup→taxGroup`, `TaxValue→taxValue`, `MeasureName→measure1`, `MeasureId→measureId`, `PriceIn→priceIn`, `PriceOut1..PriceOut10→priceOut1..priceOut10`, `Deleted→deleted`, `Description→description`, `WarrantyMonths→warrantyMonths`, `WarrantyDays→warrantyDays`, `DateUpdated→dateUpdated`, `AddCodes[]→addCodes` (всеки ред през `ItemAddCodeResult::fromMicroBg()`).
 
-`ItemAddCodeResult` — `MeasureId→measureId`, `Code→code`, `CodeType→codeType`, `Ratio→ratio`.
+`ItemAddCodeResult` - `MeasureId→measureId`, `Code→code`, `CodeType→codeType`, `Ratio→ratio`.
 
-`NomenclatureGroupResult` — `id→id`, `Name→name`, `Path→path`, `parentId→parentId`. `code` остава `null`.
+`NomenclatureGroupResult` - `id→id`, `Name→name`, `Path→path`, `parentId→parentId`. `code` остава `null`.
 
-`VatGroupResult` — `TaxGroup→id`, `Name→name`, `TaxValue→vatValue`. `code` остава `null`.
+`VatGroupResult` - `TaxGroup→id`, `Name→name`, `TaxValue→vatValue`. `code` остава `null`.
 
-`PaymentTypeResult` — `id→id`, `Name→name`, `PaymentMethod→paymentMethod`, `FiscalMode→fiscalMode`, `Deleted→deleted`.
+`PaymentTypeResult` - `id→id`, `Name→name`, `PaymentMethod→paymentMethod`, `FiscalMode→fiscalMode`, `Deleted→deleted`.
 
-`LocationResult` — `id→id`, `Name→name`, `Address→address`, `PriceGroup→priceGroup`, `Deleted→deleted`.
+`LocationResult` - `id→id`, `Name→name`, `Address→address`, `PriceGroup→priceGroup`, `Deleted→deleted`.
 
-`StoreResult` — `ItemId→goodId` (като string), `Qtty→qtty`.
+`StoreResult` - `ItemId→goodId` (като string), `Qtty→qtty`.
 
 **Мапинги `toMicroBgArray()`** (само не-null свойства):
 
-`PartnerInput` — `id→id` (малка буква, така е в PDF), `code→Code`, `company→Name`, `mol→MOL`, `city→City`, `address→Address`, `phone→Phone`, `email→eMail`, `taxId→TaxID`, `vatId→VatID`, `priceGroup→PriceGroup`, `discount→Discount`, `type→PartnerType`, `cardNumber→CardNumber`, `groupId→GroupId`, `deleted→Deleted`, `contactPerson→ContactPerson`, `partnerNote→PartnerNote`.
+`PartnerInput` - `id→id` (малка буква, така е в PDF), `code→Code`, `company→Name`, `mol→MOL`, `city→City`, `address→Address`, `phone→Phone`, `email→eMail`, `taxId→TaxID`, `vatId→VatID`, `priceGroup→PriceGroup`, `discount→Discount`, `type→PartnerType`, `cardNumber→CardNumber`, `groupId→GroupId`, `deleted→Deleted`, `contactPerson→ContactPerson`, `partnerNote→PartnerNote`.
 
-`ItemInput` — `id→id`, `code→Code`, `name→Name`, `barcode1→Barcode`, `notStorable→NotStorable`, `taxGroup→TaxGroup`, `groupId→GroupId`, `measureId→MeasureId`, `priceOut1..10→PriceOut1..10`, `deleted→Deleted`, `description→Description`, `warrantyMonths→WarrantyMonths`, `warrantyDays→WarrantyDays`.
+`ItemInput` - `id→id`, `code→Code`, `name→Name`, `barcode1→Barcode`, `notStorable→NotStorable`, `taxGroup→TaxGroup`, `groupId→GroupId`, `measureId→MeasureId`, `priceOut1..10→PriceOut1..10`, `deleted→Deleted`, `description→Description`, `warrantyMonths→WarrantyMonths`, `warrantyDays→WarrantyDays`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -936,7 +936,7 @@ it('keeps the Warehouse Pro dialect working', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/Dto/MicroBgDialectTest.php`
-Expected: FAIL — `Interface "Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg" not found`
+Expected: FAIL - `Interface "Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg" not found`
 
 - [ ] **Step 3: Create the two interfaces**
 
@@ -1019,7 +1019,7 @@ final class ItemAddCodeResult implements FromMicroBg
 
 Follow the field table above. Every new constructor parameter goes **last** and defaults to `null` (`addCodes` defaults to `[]`). Each class gains `use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;` and `implements FromWarehousePro, FromMicroBg`.
 
-Worked example — `PartnerResult` (the others follow the same shape against their own mapping row):
+Worked example - `PartnerResult` (the others follow the same shape against their own mapping row):
 
 ```php
     /** @param array<string, mixed> $data */
@@ -1082,7 +1082,7 @@ Worked example — `PartnerResult` (the others follow the same shape against the
 
 `PartnerInput` and `ItemInput` gain the extra constructor parameters from the table (last, defaulting to `null`), `use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;` and `implements ToWarehousePro, ToMicroBg`. Follow the `toMicroBgArray()` mapping table; keep the existing `if ($this->x !== null)` style so null properties stay off the wire.
 
-Worked example — the head of `PartnerInput::toMicroBgArray()`:
+Worked example - the head of `PartnerInput::toMicroBgArray()`:
 
 ```php
     /** @return array<string, mixed> */
@@ -1115,7 +1115,7 @@ Worked example — the head of `PartnerInput::toMicroBgArray()`:
 - [ ] **Step 7: Run the whole suite**
 
 Run: `composer test`
-Expected: PASS — the new dialect tests plus every existing test (the Warehouse Pro dialect is untouched)
+Expected: PASS - the new dialect tests plus every existing test (the Warehouse Pro dialect is untouched)
 
 - [ ] **Step 8: Commit**
 
@@ -1143,7 +1143,7 @@ git commit -m "feat: teach the shared DTOs the micro.bg dialect"
 
 - [ ] **Step 1: Write the failing test**
 
-First add the payload decoder to `tests/Pest.php` — Tasks 6, 7 and 10 all need it, so it belongs next to `fakeMicroBg()` rather than in whichever test file happens to load first:
+First add the payload decoder to `tests/Pest.php` - Tasks 6, 7 and 10 all need it, so it belongs next to `fakeMicroBg()` rather than in whichever test file happens to load first:
 
 ```php
 /**
@@ -1289,7 +1289,7 @@ it('reads prices for a price group', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroBg/Resources`
-Expected: FAIL — `Call to undefined function fakeMicroBg()` (the helper lands in Task 8; until then these tests fail)
+Expected: FAIL - `Call to undefined function fakeMicroBg()` (the helper lands in Task 8; until then these tests fail)
 
 **Note for the implementer:** add the `fakeMicroBg()` helper to `tests/Pest.php` as part of this task rather than waiting for Task 8, otherwise nothing here is runnable:
 
@@ -1569,7 +1569,7 @@ git commit -m "feat: add micro.bg partner and item resources"
 
 **Interfaces:**
 - Produces:
-  - `Groups::list(string $module): ResultList<NomenclatureGroupResult>` — `$module` е `'Items'` или `'Partners'`
+  - `Groups::list(string $module): ResultList<NomenclatureGroupResult>` - `$module` е `'Items'` или `'Partners'`
   - `Groups::create(string $module, string $name, ?int $parentId = null, ?string $path = null): NomenclatureGroupResult`
   - `Groups::rename(string $module, int $id, string $name): NomenclatureGroupResult`
   - `Groups::delete(string $module, string $mode, ?int $id = null, ?string $path = null): void`
@@ -1645,7 +1645,7 @@ it('deletes a group by id, by path or wholesale', function (array $args, array $
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroBg/Resources/LookupsTest.php`
-Expected: FAIL — `Call to undefined method ...MicroBgClient::groups()`
+Expected: FAIL - `Call to undefined method ...MicroBgClient::groups()`
 
 - [ ] **Step 3: Write the four resources**
 
@@ -1849,7 +1849,7 @@ it('returns an empty walk for an empty nomenclature', function (callable $make) 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/ConformanceTest.php`
-Expected: FAIL — `MicroBgClient is not an instance of Client`
+Expected: FAIL - `MicroBgClient is not an instance of Client`
 
 - [ ] **Step 3: Complete `MicroBgClient`**
 
@@ -1878,7 +1878,7 @@ use Ux2Dev\Microinvest\MicroBg\Resources\Payments;
 use Ux2Dev\Microinvest\MicroBg\Resources\TaxGroups;
 
 /**
- * Client for the micro.bg External App API — the hosted Microinvest service.
+ * Client for the micro.bg External App API - the hosted Microinvest service.
  *
  * One instance per registered external application. Methods that exist only
  * here (item prices, cost allocation, invoices, company data) are deliberately
@@ -2024,7 +2024,7 @@ it('builds a micro.bg connection from the driver key', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/Laravel/ManagerTest.php tests/MicroinvestFactoryTest.php`
-Expected: FAIL — `Unknown Microinvest driver "micro_bg"`
+Expected: FAIL - `Unknown Microinvest driver "micro_bg"`
 
 - [ ] **Step 3: Add the factory method**
 
@@ -2118,8 +2118,8 @@ git commit -m "feat: wire the micro.bg driver into Laravel and the factory"
 
 ## Открити въпроси към Микроинвест
 
-1. `getMeasures()` се цитира в `insertItem()`, но не е документиран никъде — без него `MeasureId` е познаваем само чрез вече съществуваща стока.
-2. Секция 5.2 липсва в PDF-а — след `5.1 getOperations()` идва направо `5.3 saveOperation()`.
-3. `status` срещу `success` — имплементирано е приемане и на двете.
-4. При партньори `Deleted` е документиран като „1 - да, 2 - не", а при стоки като „1 - да, 0 - не". Имплементирано е като `(bool)`, тоест 2 би се чело като „да" — нужно е потвърждение.
-5. Формат на `errors[]` при реална грешка — примерите показват само празен масив.
+1. `getMeasures()` се цитира в `insertItem()`, но не е документиран никъде - без него `MeasureId` е познаваем само чрез вече съществуваща стока.
+2. Секция 5.2 липсва в PDF-а - след `5.1 getOperations()` идва направо `5.3 saveOperation()`.
+3. `status` срещу `success` - имплементирано е приемане и на двете.
+4. При партньори `Deleted` е документиран като „1 - да, 2 - не", а при стоки като „1 - да, 0 - не". Имплементирано е като `(bool)`, тоест 2 би се чело като „да" - нужно е потвърждение.
+5. Формат на `errors[]` при реална грешка - примерите показват само празен масив.

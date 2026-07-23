@@ -8,7 +8,7 @@ use Ux2Dev\Microinvest\Dto\Result\Locations\LocationResult;
 use Ux2Dev\Microinvest\Http\ResultList;
 
 /**
- * Objects are the physical places stock lives — warehouses, shops, offices.
+ * Objects are the physical places stock lives - warehouses, shops, offices.
  * Warehouse Pro calls the same thing a location.
  */
 final class Objects extends Resource

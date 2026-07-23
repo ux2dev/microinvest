@@ -11,7 +11,7 @@ Framework-agnostic PHP SDK for [Microinvest](https://microinvest.net), covering 
 | **Warehouse Pro** | REST | Microinvest Utility Center on port `8700`/`8701`, on premise |
 | **micro.bg** | signed RPC | `https://micro.bg/ExtApps/ExternalApp/API/`, hosted |
 
-The two share a domain model (they sit on the same schema) but nothing on the wire, so each has its own config, transport and resources. What both support — partners, items, groups, VAT groups, payment types, objects, quantities — is expressed as `Ux2Dev\Microinvest\Contracts\Client`, so nomenclature code can be written once and pointed at either.
+The two share a domain model (they sit on the same schema) but nothing on the wire, so each has its own config, transport and resources. What both support - partners, items, groups, VAT groups, payment types, objects, quantities - is expressed as `Ux2Dev\Microinvest\Contracts\Client`, so nomenclature code can be written once and pointed at either.
 
 Works with plain PHP or Laravel.
 
@@ -239,7 +239,7 @@ foreach ($microinvest->partners()->each() as $partner) {
 }
 ```
 
-It is a generator — rows are fetched lazily, so memory stays flat regardless of how
+It is a generator - rows are fetched lazily, so memory stays flat regardless of how
 many pages the server reports.
 
 `Ux2Dev\Microinvest\Contracts\Client` is the interface every Microinvest backend
@@ -250,18 +250,18 @@ concrete client when you need that backend's extras.
 
 | | Warehouse Pro | micro.bg |
 |---|---|---|
-| `partners()` / `items()` — `get`, `create`, `update`, `each` | yes | yes |
+| `partners()` / `items()` - `get`, `create`, `update`, `each` | yes | yes |
 | `listItemGroups`, `listPartnerGroups`, `listTaxGroups`, `listPaymentTypes`, `listObjects`, `listQuantities` | yes | yes |
-| `partners()->delete()`, `items()->delete()` | — | yes |
-| `groups()->create/rename/delete` | — | yes |
-| `items()->prices()`, additional item codes | — | yes |
-| `users()`, `documents()`, `payments()->list/get/create` | yes | — |
-| `invoices()->create()` (returns a PDF url) | — | yes |
-| `company()->get()`, `company()->bankAccounts()` | — | yes |
-| `operations()->allocateCost()` | — | yes |
+| `partners()->delete()`, `items()->delete()` | - | yes |
+| `groups()->create/rename/delete` | - | yes |
+| `items()->prices()`, additional item codes | - | yes |
+| `users()`, `documents()`, `payments()->list/get/create` | yes | - |
+| `invoices()->create()` (returns a PDF url) | - | yes |
+| `company()->get()`, `company()->bankAccounts()` | - | yes |
+| `operations()->allocateCost()` | - | yes |
 | Operations | flat row per line | document with nested lines |
 
-Anything in a `—` cell simply does not exist on that client, so reaching for it is
+Anything in a `-` cell simply does not exist on that client, so reaching for it is
 a `TypeError` at the call site rather than a runtime surprise.
 
 Operations are the one place the two backends model the same thing differently, which

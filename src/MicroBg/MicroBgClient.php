@@ -25,7 +25,7 @@ use Ux2Dev\Microinvest\MicroBg\Resources\Payments;
 use Ux2Dev\Microinvest\MicroBg\Resources\TaxGroups;
 
 /**
- * Client for the micro.bg External App API — the hosted Microinvest service.
+ * Client for the micro.bg External App API - the hosted Microinvest service.
  *
  * One instance per registered external application. Methods that exist only
  * here (item prices, additional item codes, group writes) hang off the concrete

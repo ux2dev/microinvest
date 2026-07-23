@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Пренарежда съществуващия Warehouse Pro SDK в поддърво `src/WarehousePro/`, въвежда диалектните DTO интерфейси и контрактите `Client`/`PartnerRepository`/`ItemRepository` с `each()` — без да добавя нито ред micro.bg код.
+**Goal:** Пренарежда съществуващия Warehouse Pro SDK в поддърво `src/WarehousePro/`, въвежда диалектните DTO интерфейси и контрактите `Client`/`PartnerRepository`/`ItemRepository` с `each()` - без да добавя нито ред micro.bg код.
 
 **Architecture:** Днешният код се мести 1:1 в `WarehousePro/` (`git mv` + смяна на namespace, нула промяна в логиката). `Exception/`, `Http/ResultList`, `Dto/` остават споделени в корена. Хидратацията `fromArray()`/`toArray()` се преименува на диалектно-специфични `fromWarehousePro()`/`toWarehouseProArray()` зад маркерни интерфейси, за да може Фаза 2 да добави `fromMicroBg()` към същите DTO класове. `Microinvest` спира да е клиент и става статична фабрика.
 
@@ -12,10 +12,10 @@
 
 - PHP `>=8.2`; всеки файл започва с `declare(strict_types=1);`
 - Всички конкретни класове са `final`; DTO-тата остават `readonly` където са такива днес
-- PSR-18/PSR-17 се **инжектират** — никакъв discovery, никакъв `new Client()` извън `src/Laravel/`
+- PSR-18/PSR-17 се **инжектират** - никакъв discovery, никакъв `new Client()` извън `src/Laravel/`
 - Никакви нови зависимости в `require` (Guzzle остава само `require-dev` + Laravel manager)
 - Wire ключовете на Warehouse Pro са snake_case и **не се променят** от този план
-- Покритието трябва да остане 100% (`composer test:coverage` в CI); локално не може да се мери — Herd CLI няма Xdebug/PCOV, разчита се на CI
+- Покритието трябва да остане 100% (`composer test:coverage` в CI); локално не може да се мери - Herd CLI няма Xdebug/PCOV, разчита се на CI
 - Работи се в клон `feat/micro-bg-backend` (вече създаден, съдържа спецификацията)
 
 **Референтна спецификация:** `docs/superpowers/specs/2026-07-23-two-backend-sdk-design.md`
@@ -91,7 +91,7 @@ it('falls back to the default empty body once the queue is drained', function ()
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/Http/FakeHttpClientTest.php`
-Expected: FAIL — `Call to undefined method ...FakeHttpClient::sequence()`
+Expected: FAIL - `Call to undefined method ...FakeHttpClient::sequence()`
 
 - [ ] **Step 3: Implement the queue**
 
@@ -150,7 +150,7 @@ In `tests/Http/FakeHttpClient.php`, add the property, drain it in `sendRequest`,
 - [ ] **Step 4: Run the whole suite**
 
 Run: `composer test`
-Expected: PASS — новите 2 теста минават, старите остават зелени (`withJson` е рефакториран, не променен по поведение)
+Expected: PASS - новите 2 теста минават, старите остават зелени (`withJson` е рефакториран, не променен по поведение)
 
 - [ ] **Step 5: Commit**
 
@@ -233,7 +233,7 @@ it('marks every Result DTO as Warehouse Pro hydratable', function (string $file)
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/Dto/DialectContractsTest.php`
-Expected: FAIL — `Interface "Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro" not found`
+Expected: FAIL - `Interface "Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro" not found`
 
 - [ ] **Step 3: Create the two interfaces**
 
@@ -295,7 +295,7 @@ src/Dto/Result/Users/UserResult.php
 src/Dto/Result/VatGroups/VatGroupResult.php
 ```
 
-apply exactly three edits — add the import, add `implements`, rename the method. The body of the method is untouched. Worked example for `PartnerResult`:
+apply exactly three edits - add the import, add `implements`, rename the method. The body of the method is untouched. Worked example for `PartnerResult`:
 
 ```php
  namespace Ux2Dev\Microinvest\Dto\Result\Partners;
@@ -406,7 +406,7 @@ Expected: no output
 - [ ] **Step 10: Run the whole suite**
 
 Run: `composer test`
-Expected: PASS — all tests green, including the 3 new ones
+Expected: PASS - all tests green, including the 3 new ones
 
 - [ ] **Step 11: Commit**
 
@@ -419,7 +419,7 @@ git commit -m "refactor: name DTO hydration after its wire dialect"
 
 ### Task 3: Преместване на Warehouse Pro в собствено поддърво
 
-Чисто механично: `git mv` + смяна на namespace. **Нула промяна в логиката** — ако някой ред бизнес логика се промени в тази задача, тя е сгрешена.
+Чисто механично: `git mv` + смяна на namespace. **Нула промяна в логиката** - ако някой ред бизнес логика се промени в тази задача, тя е сгрешена.
 
 **Files:**
 - Move: `src/Config/MicroinvestConfig.php` → `src/WarehousePro/WarehouseProConfig.php`
@@ -472,7 +472,7 @@ Apply across `src/` and `tests/`:
 | `namespace Ux2Dev\Microinvest;` + `final class Microinvest` (in `WarehouseProClient.php`) | `namespace Ux2Dev\Microinvest\WarehousePro;` + `final class WarehouseProClient` |
 | `Ux2Dev\Microinvest\Tests\Config` / `...\Tests\Resources` | `Ux2Dev\Microinvest\Tests\WarehousePro` / `...\Tests\WarehousePro\Resources` |
 
-`src/Http/ResultList.php` keeps `namespace Ux2Dev\Microinvest\Http;` — it is shared and does **not** move. `WarehouseProTransport` and every resource therefore need `use Ux2Dev\Microinvest\Http\ResultList;`.
+`src/Http/ResultList.php` keeps `namespace Ux2Dev\Microinvest\Http;` - it is shared and does **not** move. `WarehouseProTransport` and every resource therefore need `use Ux2Dev\Microinvest\Http\ResultList;`.
 
 `WarehouseProConfig`'s error messages stay byte-for-byte identical (`WarehouseProConfigTest` asserts on them).
 
@@ -522,7 +522,7 @@ In `tests/WarehousePro/Resources/CompletenessTest.php`, the glob path is now two
 
 - [ ] **Step 5: Keep the Laravel layer compiling (minimal edit only)**
 
-In `src/Laravel/MicroinvestManager.php` swap the imports and the two type references. Driver support is Task 5 — do **not** add it here.
+In `src/Laravel/MicroinvestManager.php` swap the imports and the two type references. Driver support is Task 5 - do **not** add it here.
 
 ```php
 -use Ux2Dev\Microinvest\Config\MicroinvestConfig;
@@ -579,7 +579,7 @@ Expected: no PSR-4 warnings
 - [ ] **Step 7: Run the whole suite**
 
 Run: `composer test`
-Expected: PASS — same number of tests as before Task 3, all green
+Expected: PASS - same number of tests as before Task 3, all green
 
 - [ ] **Step 8: Commit**
 
@@ -676,7 +676,7 @@ it('stops on an empty page even if the header claims more', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/WarehousePro/EachPaginationTest.php`
-Expected: FAIL — `Call to undefined method ...Resources\Partners::each()`
+Expected: FAIL - `Call to undefined method ...Resources\Partners::each()`
 
 - [ ] **Step 3: Create the three contracts**
 
@@ -933,11 +933,11 @@ it('passes the object id through to the store endpoint', function () {
 - [ ] **Step 9: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/WarehousePro/ClientContractTest.php`
-Expected: FAIL — `Call to undefined method ...WarehouseProClient::listItemGroups()`
+Expected: FAIL - `Call to undefined method ...WarehouseProClient::listItemGroups()`
 
 - [ ] **Step 10: Implement the contract on the client**
 
-In `src/WarehousePro/WarehouseProClient.php` add the imports, `implements Client`, and the six lookups after the existing accessors. The existing `partners()` and `items()` already satisfy the contract by covariance — leave them as they are.
+In `src/WarehousePro/WarehouseProClient.php` add the imports, `implements Client`, and the six lookups after the existing accessors. The existing `partners()` and `items()` already satisfy the contract by covariance - leave them as they are.
 
 ```php
 use Ux2Dev\Microinvest\Contracts\Client;
@@ -987,7 +987,7 @@ final class WarehouseProClient implements Client
 - [ ] **Step 11: Run the whole suite**
 
 Run: `composer test`
-Expected: PASS — all green, including the 4 new contract tests
+Expected: PASS - all green, including the 4 new contract tests
 
 - [ ] **Step 12: Commit**
 
@@ -1001,7 +1001,7 @@ git commit -m "feat: add Client/PartnerRepository/ItemRepository contracts with 
 ### Task 5: Фабрика `Microinvest` и драйвер в Laravel
 
 **Files:**
-- Create: `src/Microinvest.php` (ново съдържание — старият файл беше преместен в Task 3)
+- Create: `src/Microinvest.php` (ново съдържание - старият файл беше преместен в Task 3)
 - Modify: `src/Laravel/MicroinvestManager.php`, `src/Laravel/config/microinvest.php`, `src/Laravel/Facades/Microinvest.php`
 - Modify: `README.md`
 - Test: `tests/MicroinvestFactoryTest.php`, `tests/Laravel/ManagerTest.php`
@@ -1043,7 +1043,7 @@ it('builds a Warehouse Pro client', function () {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/MicroinvestFactoryTest.php`
-Expected: FAIL — `Class "Ux2Dev\Microinvest\Microinvest" not found`
+Expected: FAIL - `Class "Ux2Dev\Microinvest\Microinvest" not found`
 
 - [ ] **Step 3: Write the factory**
 
@@ -1110,7 +1110,7 @@ it('defaults to the warehouse_pro driver when none is configured', function () {
 - [ ] **Step 5: Run test to verify it fails**
 
 Run: `vendor/bin/pest tests/Laravel/ManagerTest.php`
-Expected: FAIL — no exception thrown for the unknown driver
+Expected: FAIL - no exception thrown for the unknown driver
 
 - [ ] **Step 6: Add driver dispatch to the manager**
 
@@ -1166,7 +1166,7 @@ use Ux2Dev\Microinvest\Contracts\Client;
     }
 ```
 
-**Name clash:** `GuzzleHttp\Client` and `Contracts\Client` cannot both be imported unaliased. Import the contract as `Client` and refer to Guzzle fully qualified — replace `new Client([...])` with `new \GuzzleHttp\Client([...])` and delete the `use GuzzleHttp\Client;` line.
+**Name clash:** `GuzzleHttp\Client` and `Contracts\Client` cannot both be imported unaliased. Import the contract as `Client` and refer to Guzzle fully qualified - replace `new Client([...])` with `new \GuzzleHttp\Client([...])` and delete the `use GuzzleHttp\Client;` line.
 
 - [ ] **Step 7: Add the driver key to the shipped config**
 
@@ -1201,22 +1201,22 @@ In `src/Laravel/Facades/Microinvest.php`:
 
 `README.md` needs these exact edits:
 
-- **L32–33** — imports in the quick-start block:
+- **L32-33** - imports in the quick-start block:
   ```php
   -use Ux2Dev\Microinvest\Config\MicroinvestConfig;
   -use Ux2Dev\Microinvest\Microinvest;
   +use Ux2Dev\Microinvest\Microinvest;
   +use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
   ```
-- **L35** — `$config = new MicroinvestConfig(` → `$config = new WarehouseProConfig(`
+- **L35** - `$config = new MicroinvestConfig(` → `$config = new WarehouseProConfig(`
 - **L41**:
   ```php
   -$microinvest = new Microinvest($config, new Client(), $factory, $factory);
   +$microinvest = Microinvest::warehousePro($config, new Client(), $factory, $factory);
   ```
-- **L74, L76, L79** — the `### MicroinvestConfig` heading and its prose/example: rename the class to `WarehouseProConfig`.
-- **L102** — add `'driver' => 'warehouse_pro',` as the first key of the `local` connection.
-- **L130–135** — the architecture table:
+- **L74, L76, L79** - the `### MicroinvestConfig` heading and its prose/example: rename the class to `WarehouseProConfig`.
+- **L102** - add `'driver' => 'warehouse_pro',` as the first key of the `local` connection.
+- **L130-135** - the architecture table:
 
   | Layer | Class | Note |
   |---|---|---|
@@ -1229,7 +1229,7 @@ In `src/Laravel/Facades/Microinvest.php`:
   | Contracts | `Ux2Dev\Microinvest\Contracts\*` | What every backend supports |
   | Laravel | `Ux2Dev\Microinvest\Laravel\*` | Service provider + multi-connection manager + facade |
 
-- **L188** — `Invalid MicroinvestConfig input` → `Invalid WarehouseProConfig input`
+- **L188** - `Invalid MicroinvestConfig input` → `Invalid WarehouseProConfig input`
 - **New section after the filters section (~L162)**, titled `### Iterating everything`:
 
   ````markdown
@@ -1242,7 +1242,7 @@ In `src/Laravel/Facades/Microinvest.php`:
   }
   ```
 
-  It is a generator — rows are fetched lazily, so memory stays flat regardless of how
+  It is a generator - rows are fetched lazily, so memory stays flat regardless of how
   many pages the server reports.
   ````
 
@@ -1264,13 +1264,13 @@ git commit -m "feat: turn Microinvest into a backend factory and add driver conf
 
 - [ ] `composer test` зелен
 - [ ] `grep -rn 'fromArray(\|->toArray()\|MicroinvestConfig\|MicroinvestTransport\|fakeMicroinvest' src/ tests/` не връща нищо
-- [ ] `src/` съдържа `Contracts/`, `Dto/`, `Exception/`, `Http/ResultList.php`, `Laravel/`, `WarehousePro/`, `Microinvest.php` — и нищо друго
+- [ ] `src/` съдържа `Contracts/`, `Dto/`, `Exception/`, `Http/ResultList.php`, `Laravel/`, `WarehousePro/`, `Microinvest.php` - и нищо друго
 - [ ] CI минава на PHP 8.2, 8.3, 8.4 + coverage job с `--min=100`
 - [ ] Нула споменавания на micro.bg в `src/` (това е Фаза 2)
 
 ## Какво НЕ влиза във Фаза 1
 
 - `MicroBg/` изобщо (Фаза 2: `RequestSigner`, `Envelope`, `MicroBgTransport`, 9 ресурса, `fromMicroBg()`/`toMicroBgArray()` върху споделените DTO-та)
-- Contract conformance dataset, който върти двете реализации (Фаза 2 — има смисъл едва когато има втора реализация)
+- Contract conformance dataset, който върти двете реализации (Фаза 2 - има смисъл едва когато има втора реализация)
 - `micro_bg` драйвер в Laravel manager-а (Фаза 3)
 - Полетата, специфични за micro.bg, в споделените DTO-та (Фаза 2)
