@@ -58,6 +58,28 @@ it('rejects an unknown driver', function () {
         ->toThrow(ConfigurationException::class, 'Unknown Microinvest driver "sap"');
 });
 
+it('builds a micro.bg connection from the driver key', function () {
+    $manager = new MicroinvestManager([
+        'default' => 'online',
+        'connections' => [
+            'online' => [
+                'driver' => 'micro_bg',
+                'api_id' => '1821761530712553',
+                'secret_key' => 'a6808173988b',
+                'timeout' => 15,
+            ],
+        ],
+    ]);
+
+    $client = $manager->client();
+
+    expect($client)->toBeInstanceOf(Ux2Dev\Microinvest\MicroBg\MicroBgClient::class)
+        ->and($client)->toBeInstanceOf(Ux2Dev\Microinvest\Contracts\Client::class)
+        ->and($client->transport->config->apiId)->toBe('1821761530712553')
+        ->and($client->transport->config->timeout)->toBe(15)
+        ->and($client->transport->config->entryPoint)->toBe('https://micro.bg/ExtApps/ExternalApp/API/');
+});
+
 it('defaults to the warehouse_pro driver when none is configured', function () {
     $manager = new MicroinvestManager([
         'default' => 'x',

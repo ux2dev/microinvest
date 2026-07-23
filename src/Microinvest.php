@@ -7,6 +7,8 @@ namespace Ux2Dev\Microinvest;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Ux2Dev\Microinvest\MicroBg\MicroBgClient;
+use Ux2Dev\Microinvest\MicroBg\MicroBgConfig;
 use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient;
 use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
 
@@ -24,5 +26,14 @@ final class Microinvest
         StreamFactoryInterface $streamFactory,
     ): WarehouseProClient {
         return new WarehouseProClient($config, $httpClient, $requestFactory, $streamFactory);
+    }
+
+    public static function microBg(
+        MicroBgConfig $config,
+        ClientInterface $httpClient,
+        RequestFactoryInterface $requestFactory,
+        StreamFactoryInterface $streamFactory,
+    ): MicroBgClient {
+        return new MicroBgClient($config, $httpClient, $requestFactory, $streamFactory);
     }
 }

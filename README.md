@@ -1,8 +1,19 @@
-# Microinvest Warehouse Pro PHP SDK
+# Microinvest PHP SDK
 
 > **Warning:** This is a developer testing version of the library -- use at your own risk.
+>
+> The micro.bg backend is written against the *Api_v1.4* PDF and has not yet been exercised against a live account.
 
-Framework-agnostic PHP SDK for the [Microinvest](https://microinvest.net) Warehouse Pro REST API (exposed by the Microinvest Utility Center on port `8700`/`8701`). Covers Items, Partners, Users, Locations, Operations, Store, Payments, Documents and VAT groups as resource methods with named arguments or typed input DTOs, returning typed result DTOs. Works with plain PHP or Laravel.
+Framework-agnostic PHP SDK for [Microinvest](https://microinvest.net), covering **both** of its APIs:
+
+| Backend | API | Reached via |
+|---------|-----|-------------|
+| **Warehouse Pro** | REST | Microinvest Utility Center on port `8700`/`8701`, on premise |
+| **micro.bg** | signed RPC | `https://micro.bg/ExtApps/ExternalApp/API/`, hosted |
+
+The two share a domain model (they sit on the same schema) but nothing on the wire, so each has its own config, transport and resources. What both support — partners, items, groups, VAT groups, payment types, objects, quantities — is expressed as `Ux2Dev\Microinvest\Contracts\Client`, so nomenclature code can be written once and pointed at either.
+
+Works with plain PHP or Laravel.
 
 ## Requirements
 
@@ -46,6 +57,29 @@ foreach ($items as $item) {
     echo $item->name . PHP_EOL;
 }
 ```
+
+### Plain PHP, micro.bg
+
+```php
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
+use Ux2Dev\Microinvest\MicroBg\MicroBgConfig;
+use Ux2Dev\Microinvest\Microinvest;
+
+$config = new MicroBgConfig(
+    apiId:     '1821761530712553',  // "API Идентификатор" from micro.bg
+    secretKey: 'a6808173988b...',   // "Секретен ключ"; signs the payload, never sent
+);
+
+$factory = new HttpFactory();
+$microbg = Microinvest::microBg($config, new Client(), $factory, $factory);
+
+foreach ($microbg->items()->each() as $item) {
+    echo $item->name, ' ', $item->priceOut2, PHP_EOL;
+}
+```
+
+Register the application first: sign in as owner, **Администриране → Връзка с ел. магазини → Регистриране на ново приложение**, type **Външни приложения**, status active. The **Настройки** link on that row reveals the two credentials and lets you pick the user whose permissions the API calls run as.
 
 ### Laravel
 
@@ -105,9 +139,18 @@ return [
             'api_key'  => env('MICROINVEST_API_KEY'),
             'timeout'  => (int) env('MICROINVEST_TIMEOUT', 30),
         ],
+        'online' => [
+            'driver'      => 'micro_bg',
+            'api_id'      => env('MICROBG_API_ID'),
+            'secret_key'  => env('MICROBG_SECRET_KEY'),
+            'entry_point' => env('MICROBG_ENTRY_POINT', 'https://micro.bg/ExtApps/ExternalApp/API/'),
+            'timeout'     => (int) env('MICROBG_TIMEOUT', 30),
+        ],
     ],
 ];
 ```
+
+Each connection declares a `driver`: `warehouse_pro` or `micro_bg`. `MicroinvestManager::client()` returns `Contracts\Client`; type-hint the concrete client when you need a backend's extras.
 
 ### Multiple connections
 
@@ -129,11 +172,15 @@ $stock = app(MicroinvestManager::class)
 | Layer | Location | Purpose |
 |-------|----------|---------|
 | Config | `Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig` | Base URL + optional API key, validated |
+| Config | `Ux2Dev\Microinvest\MicroBg\MicroBgConfig` | API id + secret key + entry point, validated |
 | Transport | `Ux2Dev\Microinvest\WarehousePro\WarehouseProTransport` | PSR-18 dispatch, query/body building, error mapping |
+| Transport | `Ux2Dev\Microinvest\MicroBg\MicroBgTransport` | Signed RPC dispatch over one entry point |
+| Signing | `Ux2Dev\Microinvest\MicroBg\RequestSigner` | json → base64 → urlencode → HMAC-SHA256 |
+| Envelope | `Ux2Dev\Microinvest\MicroBg\Envelope` | Reads `{status\|success, errors[], data}` |
 | Input DTOs | `Ux2Dev\Microinvest\Dto\Input\{Group}\{Entity}Input` | Mutation bodies; `toWarehouseProArray()` emits snake_case wire keys |
 | Result DTOs | `Ux2Dev\Microinvest\Dto\Result\{Group}\{Entity}Result` | Typed rows; `fromWarehousePro()` hydrates responses |
-| Resources | `Ux2Dev\Microinvest\WarehousePro\Resources\{Group}` | One method per API action |
-| Root client | `Ux2Dev\Microinvest\WarehousePro\WarehouseProClient` | Aggregator exposing every resource |
+| Resources | `Ux2Dev\Microinvest\{WarehousePro,MicroBg}\Resources\{Group}` | One method per API action |
+| Root clients | `WarehousePro\WarehouseProClient`, `MicroBg\MicroBgClient` | Aggregators exposing every resource |
 | Contracts | `Ux2Dev\Microinvest\Contracts\*` | What every Microinvest backend supports |
 | Laravel | `Ux2Dev\Microinvest\Laravel\*` | Service provider + multi-connection manager + facade |
 
@@ -196,10 +243,22 @@ It is a generator — rows are fetched lazily, so memory stays flat regardless o
 many pages the server reports.
 
 `Ux2Dev\Microinvest\Contracts\Client` is the interface every Microinvest backend
-satisfies. Type-hint it when your code only needs the nomenclature (partners, items,
-groups, VAT groups, payment types, objects, quantities); type-hint
-`WarehouseProClient` when you need the Warehouse Pro specifics such as `users()` or
-`documents()`.
+satisfies. Type-hint it when your code only needs the nomenclature; type-hint a
+concrete client when you need that backend's extras.
+
+### Which backend supports what
+
+| | Warehouse Pro | micro.bg |
+|---|---|---|
+| `partners()` / `items()` — `get`, `create`, `update`, `each` | yes | yes |
+| `listItemGroups`, `listPartnerGroups`, `listTaxGroups`, `listPaymentTypes`, `listObjects`, `listQuantities` | yes | yes |
+| `partners()->delete()`, `items()->delete()` | — | yes |
+| `groups()->create/rename/delete` | — | yes |
+| `items()->prices()`, additional item codes | — | yes |
+| `users()`, `documents()`, `operations()`, `payments()->list/get/create` | yes | — |
+
+Anything in a `—` cell simply does not exist on that client, so reaching for it is
+a `TypeError` at the call site rather than a runtime surprise.
 
 ## Exceptions
 

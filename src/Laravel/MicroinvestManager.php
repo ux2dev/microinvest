@@ -10,6 +10,8 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Ux2Dev\Microinvest\Contracts\Client;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
+use Ux2Dev\Microinvest\MicroBg\MicroBgClient;
+use Ux2Dev\Microinvest\MicroBg\MicroBgConfig;
 use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient;
 use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
 
@@ -78,6 +80,7 @@ final class MicroinvestManager
 
         return match ($driver) {
             'warehouse_pro' => $this->buildWarehousePro($c),
+            'micro_bg' => $this->buildMicroBg($c),
             default => throw new ConfigurationException("Unknown Microinvest driver \"{$driver}\""),
         };
     }
@@ -96,6 +99,26 @@ final class MicroinvestManager
         $factory = new HttpFactory();
 
         return new WarehouseProClient(
+            $config,
+            $this->httpClient ?? new \GuzzleHttp\Client(['timeout' => $config->timeout]),
+            $this->requestFactory ?? $factory,
+            $this->streamFactory ?? $factory,
+        );
+    }
+
+    /** @param array<string, mixed> $c */
+    private function buildMicroBg(array $c): MicroBgClient
+    {
+        $config = new MicroBgConfig(
+            apiId: (string) ($c['api_id'] ?? ''),
+            secretKey: (string) ($c['secret_key'] ?? ''),
+            entryPoint: (string) ($c['entry_point'] ?? MicroBgConfig::DEFAULT_ENTRY_POINT),
+            timeout: (int) ($c['timeout'] ?? 30),
+        );
+
+        $factory = new HttpFactory();
+
+        return new MicroBgClient(
             $config,
             $this->httpClient ?? new \GuzzleHttp\Client(['timeout' => $config->timeout]),
             $this->requestFactory ?? $factory,

@@ -21,3 +21,18 @@ it('builds a Warehouse Pro client', function () {
     expect($client)->toBeInstanceOf(WarehouseProClient::class)
         ->and($client)->toBeInstanceOf(Client::class);
 });
+
+it('builds a micro.bg client', function () {
+    $factory = FakeHttpClient::factory();
+
+    $client = Microinvest::microBg(
+        new Ux2Dev\Microinvest\MicroBg\MicroBgConfig('api-id', 'secret'),
+        FakeHttpClient::withJson([]),
+        $factory,
+        $factory,
+    );
+
+    expect($client)->toBeInstanceOf(Ux2Dev\Microinvest\MicroBg\MicroBgClient::class)
+        ->and($client)->toBeInstanceOf(Client::class)
+        ->and($client->transport->config->apiId)->toBe('api-id');
+});
