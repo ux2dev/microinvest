@@ -31,6 +31,28 @@ it('walks every page of partners and flattens them', function () {
         ->and((string) $http->received[2]->getUri())->toContain('page=3');
 });
 
+it('walks every page of items too', function () {
+    $http = FakeHttpClient::sequence(
+        FakeHttpClient::jsonResponse(
+            [['id' => 10]],
+            headers: ['X-CurrentPage' => '1', 'X-TotalPages' => '2'],
+        ),
+        FakeHttpClient::jsonResponse(
+            [['id' => 11]],
+            headers: ['X-CurrentPage' => '2', 'X-TotalPages' => '2'],
+        ),
+    );
+
+    $ids = [];
+    foreach (fakeWarehousePro($http)->items()->each() as $item) {
+        $ids[] = $item->id;
+    }
+
+    expect($ids)->toBe([10, 11])
+        ->and($http->received)->toHaveCount(2)
+        ->and((string) $http->received[1]->getUri())->toContain('page=2');
+});
+
 it('stops after one page when the API reports no paging headers', function () {
     $http = FakeHttpClient::sequence(FakeHttpClient::jsonResponse([['id' => 1]]));
 
