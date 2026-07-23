@@ -17,7 +17,7 @@ Works with plain PHP or Laravel.
 
 ## Requirements
 
-- PHP 8.2 or higher
+- PHP 8.3 or higher
 - JSON extension
 - A PSR-18 HTTP client and PSR-17 request/stream factories (Guzzle provides both)
 
