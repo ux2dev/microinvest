@@ -11,6 +11,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Ux2Dev\Microinvest\Config\MicroinvestConfig;
+use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
 use Ux2Dev\Microinvest\Exception\ApiException;
 use Ux2Dev\Microinvest\Exception\InvalidResponseException;
 use Ux2Dev\Microinvest\Exception\TransportException;
@@ -113,7 +114,7 @@ final class MicroinvestTransport
      *
      * @template T of object
      * @param  array<string, mixed>  $query
-     * @param  class-string<T>       $resultClass  must expose static fromArray(array): self
+     * @param  class-string<T&FromWarehousePro>  $resultClass
      * @param  array<mixed>|null     $body
      * @return ResultList<T>
      */
@@ -135,7 +136,7 @@ final class MicroinvestTransport
             if (! is_array($row)) {
                 throw new InvalidResponseException('Each collection entry must be an object');
             }
-            $items[] = $resultClass::fromArray($row);
+            $items[] = $resultClass::fromWarehousePro($row);
         }
 
         return new ResultList(
@@ -151,7 +152,7 @@ final class MicroinvestTransport
      * @template T of object
      * @param  array<string, mixed>  $query
      * @param  array<mixed>|null     $body
-     * @param  class-string<T>       $resultClass
+     * @param  class-string<T&FromWarehousePro>  $resultClass
      * @return T
      */
     public function requestOne(
@@ -167,7 +168,7 @@ final class MicroinvestTransport
             throw new InvalidResponseException("Expected a JSON object for {$path}, got an array");
         }
 
-        return $resultClass::fromArray($env['data']);
+        return $resultClass::fromWarehousePro($env['data']);
     }
 
     /**

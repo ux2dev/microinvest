@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\Locations;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+
 /**
  * A location row (table objects).
  */
-final class LocationResult
+final class LocationResult implements FromWarehousePro
 {
     public function __construct(
         public readonly ?int $id,
@@ -22,7 +24,7 @@ final class LocationResult
     }
 
     /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): static
+    public static function fromWarehousePro(array $data): static
     {
         return new self(
             id: isset($data['id']) ? (int) $data['id'] : null,

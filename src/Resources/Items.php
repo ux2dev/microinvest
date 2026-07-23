@@ -40,12 +40,12 @@ final class Items extends Resource
 
     public function create(ItemInput $input): ItemResult
     {
-        return $this->transport->requestOne('POST', '/Item', [], $input->toArray(), ItemResult::class);
+        return $this->transport->requestOne('POST', '/Item', [], $input->toWarehouseProArray(), ItemResult::class);
     }
 
     public function update(int $id, ItemInput $input): ItemResult
     {
-        return $this->transport->requestOne('PUT', '/Item', ['id' => $id], $input->toArray(), ItemResult::class);
+        return $this->transport->requestOne('PUT', '/Item', ['id' => $id], $input->toWarehouseProArray(), ItemResult::class);
     }
 
     /** @return ResultList<NomenclatureGroupResult> */

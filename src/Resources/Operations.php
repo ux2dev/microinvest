@@ -53,7 +53,7 @@ final class Operations extends Resource
     public function create(array $rows): ResultList
     {
         $body = array_map(
-            static fn (OperationInput $row): array => $row->toArray(),
+            static fn (OperationInput $row): array => $row->toWarehouseProArray(),
             array_values($rows),
         );
 

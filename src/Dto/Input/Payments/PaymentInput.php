@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Input\Payments;
 
+use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
+
 /**
  * Input DTO for POST /Payment (add a payment to an existing operation).
  * Only non-null properties are sent on the wire.
  */
-final readonly class PaymentInput
+final readonly class PaymentInput implements ToWarehousePro
 {
     public function __construct(
         public ?int $operationType = null,
@@ -27,7 +29,7 @@ final readonly class PaymentInput
     }
 
     /** @return array<string, mixed> */
-    public function toArray(): array
+    public function toWarehouseProArray(): array
     {
         $out = [];
         if ($this->operationType !== null) $out['operation_type'] = $this->operationType;

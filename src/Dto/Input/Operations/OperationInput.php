@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Input\Operations;
 
+use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
+
 /**
  * Input DTO for a single row of a POST /Operation request. The endpoint takes
  * an array of these. Field usage depends on operation_type (e.g. transfers use
  * fromObjectId/toObjectId instead of objectId). Only non-null properties are
  * sent on the wire.
  */
-final readonly class OperationInput
+final readonly class OperationInput implements ToWarehousePro
 {
     public function __construct(
         public ?int $operationType = null,
@@ -32,7 +34,7 @@ final readonly class OperationInput
     }
 
     /** @return array<string, mixed> */
-    public function toArray(): array
+    public function toWarehouseProArray(): array
     {
         $out = [];
         if ($this->operationType !== null) $out['operation_type'] = $this->operationType;

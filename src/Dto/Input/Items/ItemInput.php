@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Input\Items;
 
+use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
+
 /**
  * Input DTO for creating (POST /Item) or updating (PUT /Item) an item.
  * Only non-null properties are sent on the wire.
  */
-final readonly class ItemInput
+final readonly class ItemInput implements ToWarehousePro
 {
     public function __construct(
         public ?int $id = null,
@@ -48,7 +50,7 @@ final readonly class ItemInput
     }
 
     /** @return array<string, mixed> */
-    public function toArray(): array
+    public function toWarehouseProArray(): array
     {
         $out = [];
         if ($this->id !== null) $out['id'] = $this->id;

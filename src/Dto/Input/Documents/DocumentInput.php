@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Input\Documents;
 
+use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
+
 /**
  * Input DTO for POST /Document (add an invoice/document to an existing
  * operation). `invoiceNumber` / `externalInvoiceNumber` are strings to preserve
  * zero-padded formatting. Only non-null properties are sent on the wire.
  */
-final readonly class DocumentInput
+final readonly class DocumentInput implements ToWarehousePro
 {
     public function __construct(
         public ?int $documentNumber = null,
@@ -31,7 +33,7 @@ final readonly class DocumentInput
     }
 
     /** @return array<string, mixed> */
-    public function toArray(): array
+    public function toWarehouseProArray(): array
     {
         $out = [];
         if ($this->documentNumber !== null) $out['document_number'] = $this->documentNumber;

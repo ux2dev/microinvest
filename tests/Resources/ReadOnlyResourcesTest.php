@@ -60,8 +60,8 @@ it('lists VAT groups', function () {
 });
 
 it('exposes NomenclatureGroupResult hydration edge cases', function () {
-    $group = NomenclatureGroupResult::fromArray(['id' => 5, 'code' => 'G', 'name' => 'Grp']);
+    $group = NomenclatureGroupResult::fromWarehousePro(['id' => 5, 'code' => 'G', 'name' => 'Grp']);
 
     expect($group->id)->toBe(5)
-        ->and(NomenclatureGroupResult::fromArray([])->id)->toBeNull();
+        ->and(NomenclatureGroupResult::fromWarehousePro([])->id)->toBeNull();
 });

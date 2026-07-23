@@ -40,12 +40,12 @@ final class Partners extends Resource
 
     public function create(PartnerInput $input): PartnerResult
     {
-        return $this->transport->requestOne('POST', '/Partner', [], $input->toArray(), PartnerResult::class);
+        return $this->transport->requestOne('POST', '/Partner', [], $input->toWarehouseProArray(), PartnerResult::class);
     }
 
     public function update(int $id, PartnerInput $input): PartnerResult
     {
-        return $this->transport->requestOne('PUT', '/Partner', ['id' => $id], $input->toArray(), PartnerResult::class);
+        return $this->transport->requestOne('PUT', '/Partner', ['id' => $id], $input->toWarehouseProArray(), PartnerResult::class);
     }
 
     /** @return ResultList<NomenclatureGroupResult> */

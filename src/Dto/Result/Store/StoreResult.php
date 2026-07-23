@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\Store;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+
 /**
  * A stock amount row (table store).
  */
-final class StoreResult
+final class StoreResult implements FromWarehousePro
 {
     public function __construct(
         public readonly ?int $id,
@@ -19,7 +21,7 @@ final class StoreResult
     }
 
     /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): static
+    public static function fromWarehousePro(array $data): static
     {
         return new self(
             id: isset($data['id']) ? (int) $data['id'] : null,

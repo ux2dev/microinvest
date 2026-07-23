@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\Payments;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+
 /**
  * A payment row (table payments).
  */
-final class PaymentResult
+final class PaymentResult implements FromWarehousePro
 {
     public function __construct(
         public readonly ?int $id,
@@ -28,7 +30,7 @@ final class PaymentResult
     }
 
     /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): static
+    public static function fromWarehousePro(array $data): static
     {
         return new self(
             id: isset($data['id']) ? (int) $data['id'] : null,

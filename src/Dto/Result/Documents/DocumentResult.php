@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\Documents;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+
 /**
  * A document / invoice row (table documents).
  *
  * `invoiceNumber` and `externalInvoiceNumber` are kept as strings to preserve
  * the zero-padded formatting Microinvest uses for invoice numbers.
  */
-final class DocumentResult
+final class DocumentResult implements FromWarehousePro
 {
     public function __construct(
         public readonly ?int $id,
@@ -33,7 +35,7 @@ final class DocumentResult
     }
 
     /** @param array<string, mixed> $data */
-    public static function fromArray(array $data): static
+    public static function fromWarehousePro(array $data): static
     {
         return new self(
             id: isset($data['id']) ? (int) $data['id'] : null,

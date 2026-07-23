@@ -61,6 +61,6 @@ final class Documents extends Resource
      */
     public function create(DocumentInput $input): ResultList
     {
-        return $this->transport->requestList('POST', '/Document', [], DocumentResult::class, $input->toArray());
+        return $this->transport->requestList('POST', '/Document', [], DocumentResult::class, $input->toWarehouseProArray());
     }
 }

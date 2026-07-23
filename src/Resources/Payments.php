@@ -50,7 +50,7 @@ final class Payments extends Resource
      */
     public function create(PaymentInput $input): ResultList
     {
-        return $this->transport->requestList('POST', '/Payment', [], PaymentResult::class, $input->toArray());
+        return $this->transport->requestList('POST', '/Payment', [], PaymentResult::class, $input->toWarehouseProArray());
     }
 
     /** @return ResultList<PaymentTypeResult> */
