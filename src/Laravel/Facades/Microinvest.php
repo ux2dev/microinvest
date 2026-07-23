@@ -10,7 +10,7 @@ use Ux2Dev\Microinvest\Laravel\MicroinvestManager;
 /**
  * @method static MicroinvestManager connection(string $name)
  * @method static string currentConnection()
- * @method static \Ux2Dev\Microinvest\WarehousePro\WarehouseProClient client()
+ * @method static \Ux2Dev\Microinvest\Contracts\Client client()
  * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Items items()
  * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Partners partners()
  * @method static \Ux2Dev\Microinvest\WarehousePro\Resources\Users users()

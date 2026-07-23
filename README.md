@@ -29,16 +29,16 @@ composer require ux2dev/microinvest
 ```php
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
-use Ux2Dev\Microinvest\Config\MicroinvestConfig;
 use Ux2Dev\Microinvest\Microinvest;
+use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
 
-$config = new MicroinvestConfig(
+$config = new WarehouseProConfig(
     baseUrl: 'http://127.0.0.1:8700', // Utility Center host; trailing slash optional
     apiKey:  'your-custom-token',      // optional; omit or pass null for anonymous access
 );
 
 $factory = new HttpFactory();
-$microinvest = new Microinvest($config, new Client(), $factory, $factory);
+$microinvest = Microinvest::warehousePro($config, new Client(), $factory, $factory);
 
 $items = $microinvest->items()->list(name: 'Cola*', pageSize: 200);
 
@@ -71,12 +71,12 @@ $documentNumber = $sale->first()->documentNumber;
 
 ## Configuration
 
-### MicroinvestConfig
+### WarehouseProConfig
 
-Every client takes a `MicroinvestConfig`. It is a `final readonly` value object: all inputs are validated at construction, the API key is private and redacted from `var_dump()`, and serialization is blocked.
+Every Warehouse Pro client takes a `WarehouseProConfig`. It is a `final readonly` value object: all inputs are validated at construction, the API key is private and redacted from `var_dump()`, and serialization is blocked.
 
 ```php
-$config = new MicroinvestConfig(
+$config = new WarehouseProConfig(
     baseUrl: 'http://127.0.0.1:8700', // required
     apiKey:  'your-custom-token',      // optional; null = anonymous
     timeout: 30,                       // optional; seconds, default 30
@@ -100,6 +100,7 @@ return [
     'default' => env('MICROINVEST_CONNECTION', 'local'),
     'connections' => [
         'local' => [
+            'driver'   => 'warehouse_pro',
             'base_url' => env('MICROINVEST_BASE_URL', 'http://127.0.0.1:8700'),
             'api_key'  => env('MICROINVEST_API_KEY'),
             'timeout'  => (int) env('MICROINVEST_TIMEOUT', 30),
@@ -127,12 +128,13 @@ $stock = app(MicroinvestManager::class)
 
 | Layer | Location | Purpose |
 |-------|----------|---------|
-| Config | `Ux2Dev\Microinvest\Config\MicroinvestConfig` | Base URL + optional API key, validated |
-| Transport | `Ux2Dev\Microinvest\Http\MicroinvestTransport` | PSR-18 dispatch, query/body building, error mapping |
-| Input DTOs | `Ux2Dev\Microinvest\Dto\Input\{Group}\{Entity}Input` | Mutation bodies; `toArray()` emits snake_case wire keys |
-| Result DTOs | `Ux2Dev\Microinvest\Dto\Result\{Group}\{Entity}Result` | Typed rows; `fromArray()` hydrates responses |
-| Resources | `Ux2Dev\Microinvest\Resources\{Group}` | One method per API action |
-| Root client | `Ux2Dev\Microinvest\Microinvest` | Aggregator exposing every resource |
+| Config | `Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig` | Base URL + optional API key, validated |
+| Transport | `Ux2Dev\Microinvest\WarehousePro\WarehouseProTransport` | PSR-18 dispatch, query/body building, error mapping |
+| Input DTOs | `Ux2Dev\Microinvest\Dto\Input\{Group}\{Entity}Input` | Mutation bodies; `toWarehouseProArray()` emits snake_case wire keys |
+| Result DTOs | `Ux2Dev\Microinvest\Dto\Result\{Group}\{Entity}Result` | Typed rows; `fromWarehousePro()` hydrates responses |
+| Resources | `Ux2Dev\Microinvest\WarehousePro\Resources\{Group}` | One method per API action |
+| Root client | `Ux2Dev\Microinvest\WarehousePro\WarehouseProClient` | Aggregator exposing every resource |
+| Contracts | `Ux2Dev\Microinvest\Contracts\*` | What every Microinvest backend supports |
 | Laravel | `Ux2Dev\Microinvest\Laravel\*` | Service provider + multi-connection manager + facade |
 
 Resource methods come in three shapes:
@@ -179,13 +181,33 @@ count($list);          // same as $list->count()
 foreach ($list as $row) { /* ... */ }
 ```
 
+## Iterating everything
+
+`partners()` and `items()` implement `Ux2Dev\Microinvest\Contracts\PartnerRepository` /
+`ItemRepository`, whose `each()` walks the whole nomenclature one page at a time:
+
+```php
+foreach ($microinvest->partners()->each() as $partner) {
+    echo $partner->company, PHP_EOL;
+}
+```
+
+It is a generator — rows are fetched lazily, so memory stays flat regardless of how
+many pages the server reports.
+
+`Ux2Dev\Microinvest\Contracts\Client` is the interface every Microinvest backend
+satisfies. Type-hint it when your code only needs the nomenclature (partners, items,
+groups, VAT groups, payment types, objects, quantities); type-hint
+`WarehouseProClient` when you need the Warehouse Pro specifics such as `users()` or
+`documents()`.
+
 ## Exceptions
 
 All SDK exceptions extend `Ux2Dev\Microinvest\Exception\MicroinvestException`:
 
 | Exception | When it is thrown |
 |-----------|-------------------|
-| `ConfigurationException` | Invalid `MicroinvestConfig` input, unknown connection |
+| `ConfigurationException` | Invalid `WarehouseProConfig` input, unknown connection or driver |
 | `TransportException`     | PSR-18 client failure (network error, timeout) |
 | `InvalidResponseException` | Empty body, malformed JSON, unexpected shape |
 | `ApiException` | HTTP non-2xx. Carries `httpStatus`, `apiCode`, `apiMessage`, and the decoded `body`. |

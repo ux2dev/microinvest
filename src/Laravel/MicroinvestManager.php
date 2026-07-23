@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Laravel;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Ux2Dev\Microinvest\Contracts\Client;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient;
 use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
@@ -23,7 +23,7 @@ use Ux2Dev\Microinvest\WarehousePro\WarehouseProConfig;
  */
 final class MicroinvestManager
 {
-    /** @var array<string, WarehouseProClient> */
+    /** @var array<string, Client> */
     private array $instances = [];
 
     private string $currentConnection;
@@ -50,7 +50,7 @@ final class MicroinvestManager
         return $this->currentConnection;
     }
 
-    public function client(): WarehouseProClient
+    public function client(): Client
     {
         return $this->instances[$this->currentConnection] ??= $this->build($this->currentConnection);
     }
@@ -65,7 +65,7 @@ final class MicroinvestManager
         return $this->client()->{$method}(...$arguments);
     }
 
-    private function build(string $connection): WarehouseProClient
+    private function build(string $connection): Client
     {
         $connections = (array) ($this->config['connections'] ?? []);
 
@@ -74,7 +74,17 @@ final class MicroinvestManager
         }
 
         $c = $connections[$connection];
+        $driver = (string) ($c['driver'] ?? 'warehouse_pro');
 
+        return match ($driver) {
+            'warehouse_pro' => $this->buildWarehousePro($c),
+            default => throw new ConfigurationException("Unknown Microinvest driver \"{$driver}\""),
+        };
+    }
+
+    /** @param array<string, mixed> $c */
+    private function buildWarehousePro(array $c): WarehouseProClient
+    {
         $apiKey = $c['api_key'] ?? null;
 
         $config = new WarehouseProConfig(
@@ -87,7 +97,7 @@ final class MicroinvestManager
 
         return new WarehouseProClient(
             $config,
-            $this->httpClient ?? new Client(['timeout' => $config->timeout]),
+            $this->httpClient ?? new \GuzzleHttp\Client(['timeout' => $config->timeout]),
             $this->requestFactory ?? $factory,
             $this->streamFactory ?? $factory,
         );

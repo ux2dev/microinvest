@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 use Ux2Dev\Microinvest\Laravel\Facades\Microinvest;
 use Ux2Dev\Microinvest\Laravel\MicroinvestManager;
-use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient as MicroinvestClient;
 use Ux2Dev\Microinvest\WarehousePro\Resources\Items;
+use Ux2Dev\Microinvest\WarehousePro\WarehouseProClient as MicroinvestClient;
 
 it('resolves the manager from the container', function () {
     expect(app(MicroinvestManager::class))->toBeInstanceOf(MicroinvestManager::class)
@@ -47,3 +47,22 @@ it('forwards resource accessors through __call', function () {
 it('throws for an unknown connection', function () {
     app(MicroinvestManager::class)->connection('does-not-exist')->client();
 })->throws(ConfigurationException::class, 'is not configured');
+
+it('rejects an unknown driver', function () {
+    $manager = new MicroinvestManager([
+        'default' => 'x',
+        'connections' => ['x' => ['driver' => 'sap', 'base_url' => 'http://h']],
+    ]);
+
+    expect(fn () => $manager->client())
+        ->toThrow(ConfigurationException::class, 'Unknown Microinvest driver "sap"');
+});
+
+it('defaults to the warehouse_pro driver when none is configured', function () {
+    $manager = new MicroinvestManager([
+        'default' => 'x',
+        'connections' => ['x' => ['base_url' => 'http://h']],
+    ]);
+
+    expect($manager->client())->toBeInstanceOf(Ux2Dev\Microinvest\Contracts\Client::class);
+});
