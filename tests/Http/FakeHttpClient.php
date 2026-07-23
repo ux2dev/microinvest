@@ -16,6 +16,9 @@ final class FakeHttpClient implements ClientInterface
     /** @var list<RequestInterface> */
     public array $received = [];
 
+    /** @var list<ResponseInterface> */
+    private array $queue = [];
+
     public function __construct(
         private readonly ?ResponseInterface $response = null,
         private readonly ?Throwable $exception = null,
@@ -30,7 +33,24 @@ final class FakeHttpClient implements ClientInterface
             throw $this->exception;
         }
 
+        if ($this->queue !== []) {
+            return array_shift($this->queue);
+        }
+
         return $this->response ?? new Response(200, [], '[]');
+    }
+
+    /**
+     * @param  array<mixed>          $body
+     * @param  array<string, string> $headers
+     */
+    public static function jsonResponse(array $body, int $status = 200, array $headers = []): Response
+    {
+        return new Response(
+            status: $status,
+            headers: $headers + ['Content-Type' => 'application/json'],
+            body: json_encode($body, JSON_UNESCAPED_UNICODE),
+        );
     }
 
     /**
@@ -39,11 +59,18 @@ final class FakeHttpClient implements ClientInterface
      */
     public static function withJson(array $body, int $status = 200, array $headers = []): self
     {
-        return new self(new Response(
-            status: $status,
-            headers: $headers + ['Content-Type' => 'application/json'],
-            body: json_encode($body, JSON_UNESCAPED_UNICODE),
-        ));
+        return new self(self::jsonResponse($body, $status, $headers));
+    }
+
+    /**
+     * A client that serves the given responses one per request, in order.
+     */
+    public static function sequence(ResponseInterface ...$responses): self
+    {
+        $fake = new self();
+        $fake->queue = array_values($responses);
+
+        return $fake;
     }
 
     /** @param array<string, string> $headers */
