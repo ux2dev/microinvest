@@ -14,9 +14,12 @@ use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentTypeResult;
 use Ux2Dev\Microinvest\Dto\Result\Store\StoreResult;
 use Ux2Dev\Microinvest\Dto\Result\VatGroups\VatGroupResult;
 use Ux2Dev\Microinvest\Http\ResultList;
+use Ux2Dev\Microinvest\MicroBg\Resources\Company;
 use Ux2Dev\Microinvest\MicroBg\Resources\Groups;
+use Ux2Dev\Microinvest\MicroBg\Resources\Invoices;
 use Ux2Dev\Microinvest\MicroBg\Resources\Items;
 use Ux2Dev\Microinvest\MicroBg\Resources\Objects;
+use Ux2Dev\Microinvest\MicroBg\Resources\Operations;
 use Ux2Dev\Microinvest\MicroBg\Resources\Partners;
 use Ux2Dev\Microinvest\MicroBg\Resources\Payments;
 use Ux2Dev\Microinvest\MicroBg\Resources\TaxGroups;
@@ -38,6 +41,9 @@ final class MicroBgClient implements Client
     private ?TaxGroups $taxGroups = null;
     private ?Payments $payments = null;
     private ?Objects $objects = null;
+    private ?Operations $operations = null;
+    private ?Invoices $invoices = null;
+    private ?Company $company = null;
 
     public function __construct(
         MicroBgConfig $config,
@@ -76,6 +82,21 @@ final class MicroBgClient implements Client
     public function objects(): Objects
     {
         return $this->objects ??= new Objects($this->transport);
+    }
+
+    public function operations(): Operations
+    {
+        return $this->operations ??= new Operations($this->transport);
+    }
+
+    public function invoices(): Invoices
+    {
+        return $this->invoices ??= new Invoices($this->transport);
+    }
+
+    public function company(): Company
+    {
+        return $this->company ??= new Company($this->transport);
     }
 
     /** @return ResultList<NomenclatureGroupResult> */

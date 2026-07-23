@@ -255,10 +255,40 @@ concrete client when you need that backend's extras.
 | `partners()->delete()`, `items()->delete()` | — | yes |
 | `groups()->create/rename/delete` | — | yes |
 | `items()->prices()`, additional item codes | — | yes |
-| `users()`, `documents()`, `operations()`, `payments()->list/get/create` | yes | — |
+| `users()`, `documents()`, `payments()->list/get/create` | yes | — |
+| `invoices()->create()` (returns a PDF url) | — | yes |
+| `company()->get()`, `company()->bankAccounts()` | — | yes |
+| `operations()->allocateCost()` | — | yes |
+| Operations | flat row per line | document with nested lines |
 
 Anything in a `—` cell simply does not exist on that client, so reaching for it is
 a `TypeError` at the call site rather than a runtime surprise.
+
+Operations are the one place the two backends model the same thing differently, which
+is why they are absent from the contract: Warehouse Pro returns one flat `OperationResult`
+per item line, while micro.bg returns an `OperationDocumentResult` header carrying
+`OperationLineResult` children. Code that pushes sales has to pick a backend.
+
+### Idempotent writes on micro.bg
+
+micro.bg lets an integration stamp its own id on an operation and then work by that id,
+which makes re-running a sync safe:
+
+```php
+use Ux2Dev\Microinvest\Dto\Input\Operations\OperationDocumentInput;
+use Ux2Dev\Microinvest\Dto\Input\Operations\OperationLineInput;
+
+$microbg->operations()->save(
+    new OperationDocumentInput(
+        operationType: 2,          // sale
+        objectId: 6,
+        lines: [new OperationLineInput(itemId: 8814, qtty: 1.0, price: 12.0)],
+        partnerId: 2,
+        extAppDocId: $order->id,   // your own order id
+    ),
+    byExtAppDocId: true,           // create on the first call, update afterwards
+);
+```
 
 ## Exceptions
 
