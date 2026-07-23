@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\WarehousePro\Resources;
 
+use Ux2Dev\Microinvest\Contracts\ItemRepository;
 use Ux2Dev\Microinvest\Dto\Input\Items\ItemInput;
 use Ux2Dev\Microinvest\Dto\Result\Items\ItemResult;
 use Ux2Dev\Microinvest\Dto\Result\NomenclatureGroupResult;
 use Ux2Dev\Microinvest\Http\ResultList;
 
-final class Items extends Resource
+final class Items extends Resource implements ItemRepository
 {
     /** @return ResultList<ItemResult> */
     public function list(
@@ -46,6 +47,30 @@ final class Items extends Resource
     public function update(int $id, ItemInput $input): ItemResult
     {
         return $this->transport->requestOne('PUT', '/Item', ['id' => $id], $input->toWarehouseProArray(), ItemResult::class);
+    }
+
+    /**
+     * Every item, one page at a time.
+     *
+     * @return iterable<ItemResult>
+     */
+    public function each(): iterable
+    {
+        $page = 1;
+
+        while (true) {
+            $result = $this->list(page: $page, pageSize: self::EACH_PAGE_SIZE);
+
+            yield from $result->items;
+
+            $totalPages = $result->totalPages;
+
+            if ($totalPages === null || $page >= $totalPages || $result->count() === 0) {
+                return;
+            }
+
+            $page++;
+        }
     }
 
     /** @return ResultList<NomenclatureGroupResult> */

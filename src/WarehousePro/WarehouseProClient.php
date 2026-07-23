@@ -7,6 +7,13 @@ namespace Ux2Dev\Microinvest\WarehousePro;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Ux2Dev\Microinvest\Contracts\Client;
+use Ux2Dev\Microinvest\Dto\Result\Locations\LocationResult;
+use Ux2Dev\Microinvest\Dto\Result\NomenclatureGroupResult;
+use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentTypeResult;
+use Ux2Dev\Microinvest\Dto\Result\Store\StoreResult;
+use Ux2Dev\Microinvest\Dto\Result\VatGroups\VatGroupResult;
+use Ux2Dev\Microinvest\Http\ResultList;
 use Ux2Dev\Microinvest\WarehousePro\Resources\Documents;
 use Ux2Dev\Microinvest\WarehousePro\Resources\Items;
 use Ux2Dev\Microinvest\WarehousePro\Resources\Locations;
@@ -24,7 +31,7 @@ use Ux2Dev\Microinvest\WarehousePro\Resources\VatGroups;
  * Instantiate once per host with a PSR-18 client + PSR-17 factories, then
  * dispatch requests via the resource accessors ($client->items(), etc.).
  */
-final class WarehouseProClient
+final class WarehouseProClient implements Client
 {
     public readonly WarehouseProTransport $transport;
 
@@ -90,5 +97,41 @@ final class WarehouseProClient
     public function vatGroups(): VatGroups
     {
         return $this->vatGroups ??= new VatGroups($this->transport);
+    }
+
+    /** @return ResultList<NomenclatureGroupResult> */
+    public function listItemGroups(): ResultList
+    {
+        return $this->items()->groups();
+    }
+
+    /** @return ResultList<NomenclatureGroupResult> */
+    public function listPartnerGroups(): ResultList
+    {
+        return $this->partners()->groups();
+    }
+
+    /** @return ResultList<VatGroupResult> */
+    public function listTaxGroups(): ResultList
+    {
+        return $this->vatGroups()->list();
+    }
+
+    /** @return ResultList<PaymentTypeResult> */
+    public function listPaymentTypes(): ResultList
+    {
+        return $this->payments()->types();
+    }
+
+    /** @return ResultList<LocationResult> */
+    public function listObjects(): ResultList
+    {
+        return $this->locations()->list();
+    }
+
+    /** @return ResultList<StoreResult> */
+    public function listQuantities(?int $objectId = null): ResultList
+    {
+        return $this->store()->list(objectId: $objectId);
     }
 }
