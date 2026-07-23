@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\VatGroups;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
 
 /**
  * A VAT group row (table vatgroups).
  */
-final class VatGroupResult implements FromWarehousePro
+final class VatGroupResult implements FromWarehousePro, FromMicroBg
 {
     public function __construct(
         public readonly ?int $id,
@@ -17,6 +18,19 @@ final class VatGroupResult implements FromWarehousePro
         public readonly ?string $name,
         public readonly ?float $vatValue,
     ) {
+    }
+
+    /** @param array<string, mixed> $data */
+    public static function fromMicroBg(array $data): static
+    {
+        return new self(
+            // micro.bg calls the group number TaxGroup; it is the same value
+            // items reference through their own TaxGroup field.
+            id: isset($data['TaxGroup']) ? (int) $data['TaxGroup'] : null,
+            code: null,
+            name: isset($data['Name']) ? (string) $data['Name'] : null,
+            vatValue: isset($data['TaxValue']) ? (float) $data['TaxValue'] : null,
+        );
     }
 
     /** @param array<string, mixed> $data */

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
 use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
 use Ux2Dev\Microinvest\Dto\Input\Partners\PartnerInput;
@@ -27,10 +28,16 @@ it('serialises a partner to Warehouse Pro wire keys', function () {
         ]);
 });
 
-it('marks every Result DTO as Warehouse Pro hydratable', function (string $file) {
+it('marks every Result DTO as hydratable from at least one dialect', function (string $file) {
     $class = 'Ux2Dev\\Microinvest\\Dto\\Result\\' . str_replace('/', '\\', substr($file, 0, -4));
 
-    expect(is_a($class, FromWarehousePro::class, allow_string: true))->toBeTrue();
+    $dialects = array_filter([
+        FromWarehousePro::class,
+        FromMicroBg::class,
+    ], static fn (string $i): bool => is_a($class, $i, allow_string: true));
+
+    // A Result DTO that no transport can build is dead code.
+    expect($dialects)->not->toBeEmpty();
 })->with(function () {
     $base = __DIR__ . '/../../src/Dto/Result/';
     $files = [];

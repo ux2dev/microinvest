@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\Items;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
 
 /**
- * An item row (table goods).
+ * An item row (table goods), as returned by either backend.
+ *
+ * The first block of properties is common to both; the rest are dialect
+ * specific and stay null when the other backend answered.
  */
-final class ItemResult implements FromWarehousePro
+final class ItemResult implements FromWarehousePro, FromMicroBg
 {
     public function __construct(
         public readonly ?int $id,
@@ -45,6 +49,28 @@ final class ItemResult implements FromWarehousePro
         public readonly ?bool $isVeryUsed,
         public readonly ?int $groupId,
         public readonly ?bool $deleted,
+        /** micro.bg only: the item is a service rather than stock. */
+        public readonly ?bool $notStorable = null,
+        /** micro.bg only: the VAT percentage of the item's tax group. */
+        public readonly ?float $taxValue = null,
+        /** micro.bg only: id of the base measure, needed by insertItem. */
+        public readonly ?int $measureId = null,
+        /** micro.bg only. */
+        public readonly ?string $groupName = null,
+        /** micro.bg only: tree path of the item's group. */
+        public readonly ?string $groupPath = null,
+        /** micro.bg only. */
+        public readonly ?int $warrantyMonths = null,
+        /** micro.bg only. */
+        public readonly ?int $warrantyDays = null,
+        /** micro.bg only: 'Y-m-d H:i:s' of the last create/modify. */
+        public readonly ?string $dateUpdated = null,
+        /**
+         * micro.bg only: extra codes and barcodes for this item.
+         *
+         * @var list<ItemAddCodeResult>
+         */
+        public readonly array $addCodes = [],
     ) {
     }
 
@@ -85,6 +111,58 @@ final class ItemResult implements FromWarehousePro
             isVeryUsed: isset($data['is_very_used']) ? (bool) $data['is_very_used'] : null,
             groupId: isset($data['group_id']) ? (int) $data['group_id'] : null,
             deleted: isset($data['deleted']) ? (bool) $data['deleted'] : null,
+        );
+    }
+
+    /** @param array<string, mixed> $data */
+    public static function fromMicroBg(array $data): static
+    {
+        return new self(
+            id: isset($data['id']) ? (int) $data['id'] : null,
+            code: isset($data['Code']) ? (string) $data['Code'] : null,
+            name: isset($data['Name']) ? (string) $data['Name'] : null,
+            name2: null,
+            barcode1: isset($data['Barcode']) ? (string) $data['Barcode'] : null,
+            barcode2: null,
+            barcode3: null,
+            catalog1: null,
+            catalog2: null,
+            catalog3: null,
+            measure1: isset($data['MeasureName']) ? (string) $data['MeasureName'] : null,
+            measure2: null,
+            ratio: null,
+            priceIn: isset($data['PriceIn']) ? (float) $data['PriceIn'] : null,
+            priceOut1: isset($data['PriceOut1']) ? (float) $data['PriceOut1'] : null,
+            priceOut2: isset($data['PriceOut2']) ? (float) $data['PriceOut2'] : null,
+            priceOut3: isset($data['PriceOut3']) ? (float) $data['PriceOut3'] : null,
+            priceOut4: isset($data['PriceOut4']) ? (float) $data['PriceOut4'] : null,
+            priceOut5: isset($data['PriceOut5']) ? (float) $data['PriceOut5'] : null,
+            priceOut6: isset($data['PriceOut6']) ? (float) $data['PriceOut6'] : null,
+            priceOut7: isset($data['PriceOut7']) ? (float) $data['PriceOut7'] : null,
+            priceOut8: isset($data['PriceOut8']) ? (float) $data['PriceOut8'] : null,
+            priceOut9: isset($data['PriceOut9']) ? (float) $data['PriceOut9'] : null,
+            priceOut10: isset($data['PriceOut10']) ? (float) $data['PriceOut10'] : null,
+            minQtty: null,
+            normalQtty: null,
+            description: isset($data['Description']) ? (string) $data['Description'] : null,
+            type: null,
+            isRecipe: null,
+            taxGroup: isset($data['TaxGroup']) ? (int) $data['TaxGroup'] : null,
+            isVeryUsed: null,
+            groupId: isset($data['GroupId']) ? (int) $data['GroupId'] : null,
+            deleted: isset($data['Deleted']) ? (bool) $data['Deleted'] : null,
+            notStorable: isset($data['NotStorable']) ? (bool) $data['NotStorable'] : null,
+            taxValue: isset($data['TaxValue']) ? (float) $data['TaxValue'] : null,
+            measureId: isset($data['MeasureId']) ? (int) $data['MeasureId'] : null,
+            groupName: isset($data['GroupName']) ? (string) $data['GroupName'] : null,
+            groupPath: isset($data['GroupPath']) ? (string) $data['GroupPath'] : null,
+            warrantyMonths: isset($data['WarrantyMonths']) ? (int) $data['WarrantyMonths'] : null,
+            warrantyDays: isset($data['WarrantyDays']) ? (int) $data['WarrantyDays'] : null,
+            dateUpdated: isset($data['DateUpdated']) ? (string) $data['DateUpdated'] : null,
+            addCodes: array_map(
+                static fn (array $row): ItemAddCodeResult => ItemAddCodeResult::fromMicroBg($row),
+                array_values(array_filter((array) ($data['AddCodes'] ?? []), 'is_array')),
+            ),
         );
     }
 }

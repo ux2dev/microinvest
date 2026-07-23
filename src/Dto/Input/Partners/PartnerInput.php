@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Input\Partners;
 
+use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
 
 /**
  * Input DTO for creating (POST /Partner) or updating (PUT /Partner) a partner.
  * Only non-null properties are sent on the wire.
  */
-final readonly class PartnerInput implements ToWarehousePro
+final readonly class PartnerInput implements ToWarehousePro, ToMicroBg
 {
     public function __construct(
         public ?int $id = null,
@@ -46,6 +47,10 @@ final readonly class PartnerInput implements ToWarehousePro
         public ?string $note1 = null,
         public ?string $note2 = null,
         public ?int $paymentDays = null,
+        /** micro.bg only; ignored by Warehouse Pro. */
+        public ?string $contactPerson = null,
+        /** micro.bg only; ignored by Warehouse Pro. */
+        public ?string $partnerNote = null,
     ) {
     }
 
@@ -86,6 +91,39 @@ final readonly class PartnerInput implements ToWarehousePro
         if ($this->note1 !== null) $out['note1'] = $this->note1;
         if ($this->note2 !== null) $out['note2'] = $this->note2;
         if ($this->paymentDays !== null) $out['payment_days'] = $this->paymentDays;
+        return $out;
+    }
+
+    /**
+     * Warehouse Pro only properties (the *2 duplicates, fax, bank details,
+     * notes, payment days, is_very_used, user id) have no micro.bg field and
+     * are dropped here.
+     *
+     * @return array<string, mixed>
+     */
+    public function toMicroBgArray(): array
+    {
+        $out = [];
+        // PDF v1.4 spells the identifier `id` in lower case while every other
+        // partner field is PascalCase.
+        if ($this->id !== null) $out['id'] = $this->id;
+        if ($this->code !== null) $out['Code'] = $this->code;
+        if ($this->company !== null) $out['Name'] = $this->company;
+        if ($this->mol !== null) $out['MOL'] = $this->mol;
+        if ($this->city !== null) $out['City'] = $this->city;
+        if ($this->address !== null) $out['Address'] = $this->address;
+        if ($this->phone !== null) $out['Phone'] = $this->phone;
+        if ($this->email !== null) $out['eMail'] = $this->email;
+        if ($this->taxId !== null) $out['TaxID'] = $this->taxId;
+        if ($this->vatId !== null) $out['VatID'] = $this->vatId;
+        if ($this->priceGroup !== null) $out['PriceGroup'] = $this->priceGroup;
+        if ($this->discount !== null) $out['Discount'] = $this->discount;
+        if ($this->type !== null) $out['PartnerType'] = $this->type;
+        if ($this->cardNumber !== null) $out['CardNumber'] = $this->cardNumber;
+        if ($this->groupId !== null) $out['GroupId'] = $this->groupId;
+        if ($this->deleted !== null) $out['Deleted'] = $this->deleted;
+        if ($this->contactPerson !== null) $out['ContactPerson'] = $this->contactPerson;
+        if ($this->partnerNote !== null) $out['PartnerNote'] = $this->partnerNote;
         return $out;
     }
 }

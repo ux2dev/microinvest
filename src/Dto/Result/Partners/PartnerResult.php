@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Result\Partners;
 
+use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
 
 /**
- * A partner row (table partners).
+ * A partner row (table partners), as returned by either backend.
+ *
+ * The first block of properties is common to both; the rest are dialect
+ * specific and stay null when the other backend answered.
  */
-final class PartnerResult implements FromWarehousePro
+final class PartnerResult implements FromWarehousePro, FromMicroBg
 {
     public function __construct(
         public readonly ?int $id,
@@ -46,6 +50,16 @@ final class PartnerResult implements FromWarehousePro
         public readonly ?string $note1,
         public readonly ?string $note2,
         public readonly ?int $paymentDays,
+        /** micro.bg only. */
+        public readonly ?string $contactPerson = null,
+        /** micro.bg only. */
+        public readonly ?string $partnerNote = null,
+        /** micro.bg only. */
+        public readonly ?string $groupName = null,
+        /** micro.bg only: tree path of the partner's group, '-1' for the service group. */
+        public readonly ?string $groupPath = null,
+        /** micro.bg only: 'Y-m-d H:i:s' of the last create/modify. */
+        public readonly ?string $dateUpdated = null,
     ) {
     }
 
@@ -87,6 +101,56 @@ final class PartnerResult implements FromWarehousePro
             note1: isset($data['note1']) ? (string) $data['note1'] : null,
             note2: isset($data['note2']) ? (string) $data['note2'] : null,
             paymentDays: isset($data['payment_days']) ? (int) $data['payment_days'] : null,
+        );
+    }
+
+    /** @param array<string, mixed> $data */
+    public static function fromMicroBg(array $data): static
+    {
+        return new self(
+            id: isset($data['id']) ? (int) $data['id'] : null,
+            code: isset($data['Code']) ? (string) $data['Code'] : null,
+            company: isset($data['Name']) ? (string) $data['Name'] : null,
+            company2: null,
+            mol: isset($data['MOL']) ? (string) $data['MOL'] : null,
+            mol2: null,
+            city: isset($data['City']) ? (string) $data['City'] : null,
+            city2: null,
+            address: isset($data['Address']) ? (string) $data['Address'] : null,
+            address2: null,
+            phone: isset($data['Phone']) ? (string) $data['Phone'] : null,
+            phone2: null,
+            fax: null,
+            email: isset($data['eMail']) ? (string) $data['eMail'] : null,
+            taxId: isset($data['TaxID']) ? (string) $data['TaxID'] : null,
+            vatId: isset($data['VatID']) ? (string) $data['VatID'] : null,
+            bankName: null,
+            bankCode: null,
+            bankAcct: null,
+            bankVatName: null,
+            bankVatCode: null,
+            bankVatAcct: null,
+            priceGroup: isset($data['PriceGroup']) ? (int) $data['PriceGroup'] : null,
+            discount: isset($data['Discount']) ? (float) $data['Discount'] : null,
+            type: isset($data['PartnerType']) ? (int) $data['PartnerType'] : null,
+            isVeryUsed: null,
+            userId: null,
+            groupId: isset($data['GroupId']) ? (int) $data['GroupId'] : null,
+            userRealTime: null,
+            // PDF v1.4 documents Deleted as "1 - да, 2 - не" for partners but
+            // "1 - да, 0 - не" for items. Treated as a plain boolean here;
+            // a value of 2 would therefore read as deleted. Needs confirming
+            // against a live account.
+            deleted: isset($data['Deleted']) ? (bool) $data['Deleted'] : null,
+            cardNumber: isset($data['CardNumber']) ? (string) $data['CardNumber'] : null,
+            note1: null,
+            note2: null,
+            paymentDays: null,
+            contactPerson: isset($data['ContactPerson']) ? (string) $data['ContactPerson'] : null,
+            partnerNote: isset($data['PartnerNote']) ? (string) $data['PartnerNote'] : null,
+            groupName: isset($data['GroupName']) ? (string) $data['GroupName'] : null,
+            groupPath: isset($data['GroupPath']) ? (string) $data['GroupPath'] : null,
+            dateUpdated: isset($data['DateUpdated']) ? (string) $data['DateUpdated'] : null,
         );
     }
 }

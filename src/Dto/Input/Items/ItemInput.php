@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\Dto\Input\Items;
 
+use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
 
 /**
  * Input DTO for creating (POST /Item) or updating (PUT /Item) an item.
  * Only non-null properties are sent on the wire.
  */
-final readonly class ItemInput implements ToWarehousePro
+final readonly class ItemInput implements ToWarehousePro, ToMicroBg
 {
     public function __construct(
         public ?int $id = null,
@@ -46,6 +47,14 @@ final readonly class ItemInput implements ToWarehousePro
         public ?bool $isVeryUsed = null,
         public ?int $groupId = null,
         public ?bool $deleted = null,
+        /** micro.bg only: the item is a service rather than stock. */
+        public ?bool $notStorable = null,
+        /** micro.bg only: required by insertItem. */
+        public ?int $measureId = null,
+        /** micro.bg only. */
+        public ?int $warrantyMonths = null,
+        /** micro.bg only. */
+        public ?int $warrantyDays = null,
     ) {
     }
 
@@ -86,6 +95,41 @@ final readonly class ItemInput implements ToWarehousePro
         if ($this->isVeryUsed !== null) $out['is_very_used'] = $this->isVeryUsed;
         if ($this->groupId !== null) $out['group_id'] = $this->groupId;
         if ($this->deleted !== null) $out['deleted'] = $this->deleted;
+        return $out;
+    }
+
+    /**
+     * Warehouse Pro only properties (name2, the extra barcodes and catalogs,
+     * measure names, ratio, min/normal quantities, type, is_recipe,
+     * is_very_used, price_in) have no micro.bg field and are dropped here.
+     *
+     * @return array<string, mixed>
+     */
+    public function toMicroBgArray(): array
+    {
+        $out = [];
+        if ($this->id !== null) $out['id'] = $this->id;
+        if ($this->code !== null) $out['Code'] = $this->code;
+        if ($this->name !== null) $out['Name'] = $this->name;
+        if ($this->barcode1 !== null) $out['Barcode'] = $this->barcode1;
+        if ($this->notStorable !== null) $out['NotStorable'] = $this->notStorable;
+        if ($this->taxGroup !== null) $out['TaxGroup'] = $this->taxGroup;
+        if ($this->groupId !== null) $out['GroupId'] = $this->groupId;
+        if ($this->measureId !== null) $out['MeasureId'] = $this->measureId;
+        if ($this->priceOut1 !== null) $out['PriceOut1'] = $this->priceOut1;
+        if ($this->priceOut2 !== null) $out['PriceOut2'] = $this->priceOut2;
+        if ($this->priceOut3 !== null) $out['PriceOut3'] = $this->priceOut3;
+        if ($this->priceOut4 !== null) $out['PriceOut4'] = $this->priceOut4;
+        if ($this->priceOut5 !== null) $out['PriceOut5'] = $this->priceOut5;
+        if ($this->priceOut6 !== null) $out['PriceOut6'] = $this->priceOut6;
+        if ($this->priceOut7 !== null) $out['PriceOut7'] = $this->priceOut7;
+        if ($this->priceOut8 !== null) $out['PriceOut8'] = $this->priceOut8;
+        if ($this->priceOut9 !== null) $out['PriceOut9'] = $this->priceOut9;
+        if ($this->priceOut10 !== null) $out['PriceOut10'] = $this->priceOut10;
+        if ($this->deleted !== null) $out['Deleted'] = $this->deleted;
+        if ($this->description !== null) $out['Description'] = $this->description;
+        if ($this->warrantyMonths !== null) $out['WarrantyMonths'] = $this->warrantyMonths;
+        if ($this->warrantyDays !== null) $out['WarrantyDays'] = $this->warrantyDays;
         return $out;
     }
 }
