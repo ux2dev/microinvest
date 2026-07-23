@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Ux2Dev\Microinvest\Dto\Input\Items\ItemInput;
 use Ux2Dev\Microinvest\Exception\ApiException;
+use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('lists items and converts the vat flag to an int', function () {
     $http = microBgOk([]);
@@ -71,6 +72,24 @@ it('walks items with a fromId cursor', function () {
     }
 
     expect($ids)->toBe([7, 9]);
+});
+
+it('advances the cursor across a full page of items', function () {
+    $full = array_map(static fn (int $i): array => ['id' => $i], range(1, 100));
+
+    $http = FakeHttpClient::sequence(
+        FakeHttpClient::jsonResponse(['status' => 1, 'errors' => [], 'data' => $full]),
+        FakeHttpClient::jsonResponse(['status' => 1, 'errors' => [], 'data' => [['id' => 101]]]),
+    );
+
+    $ids = [];
+    foreach (fakeMicroBg($http)->items()->each() as $item) {
+        $ids[] = $item->id;
+    }
+
+    expect($ids)->toHaveCount(101)
+        ->and($http->received)->toHaveCount(2)
+        ->and(microBgPayload($http)['parameters'])->toBe(['fromId' => 100, 'limit' => 100]);
 });
 
 it('reads quantities for one object', function () {

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Ux2Dev\Microinvest\Exception\InvalidResponseException;
 use Ux2Dev\Microinvest\MicroBg\RequestSigner;
 
 it('signs the encoded string, not the raw json', function () {
@@ -36,6 +37,12 @@ it('keeps float prices as floats on the wire', function () {
     $request = (new RequestSigner('a', 'b'))->sign(['functionData' => ['PriceOut1' => 12.0]])['Request'];
 
     expect(base64_decode(urldecode(substr($request, 0, -64))))->toContain('12.0');
+});
+
+it('wraps a json encoding failure', function () {
+    // Invalid UTF-8 cannot be JSON encoded, so the payload never reaches the wire.
+    expect(fn () => (new RequestSigner('a', 'b'))->sign(['functionData' => "\xB1\x31\x00"]))
+        ->toThrow(InvalidResponseException::class, 'Failed to encode micro.bg request payload');
 });
 
 it('produces a different signature for a different secret', function () {

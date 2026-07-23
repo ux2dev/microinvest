@@ -6,6 +6,7 @@ use Ux2Dev\Microinvest\Exception\ApiException;
 use Ux2Dev\Microinvest\Exception\InvalidResponseException;
 use Ux2Dev\Microinvest\Exception\TransportException;
 use Ux2Dev\Microinvest\MicroBg\MicroBgConfig;
+use Ux2Dev\Microinvest\Dto\Result\Partners\PartnerResult;
 use Ux2Dev\Microinvest\MicroBg\MicroBgTransport;
 use Ux2Dev\Microinvest\Tests\Http\FakeClientException;
 use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
@@ -99,4 +100,33 @@ it('rejects a list where an envelope is expected', function () {
 
     expect(fn () => fakeMicroBgTransport($http)->call('getItems'))
         ->toThrow(InvalidResponseException::class, 'Expected a JSON object');
+});
+
+it('callList returns an empty list when the method reports no data', function () {
+    $http = FakeHttpClient::withJson(['status' => 1, 'errors' => [], 'data' => null]);
+
+    $list = fakeMicroBgTransport($http)->callList('getPartners', [], PartnerResult::class);
+
+    expect($list->all())->toBe([]);
+});
+
+it('callList rejects a data node that is not a list', function () {
+    $http = FakeHttpClient::withJson(['status' => 1, 'errors' => [], 'data' => ['Name' => 'ACME']]);
+
+    expect(fn () => fakeMicroBgTransport($http)->callList('getPartners', [], PartnerResult::class))
+        ->toThrow(InvalidResponseException::class, 'Expected a list of rows for getPartners');
+});
+
+it('callList rejects a scalar row inside the list', function () {
+    $http = FakeHttpClient::withJson(['status' => 1, 'errors' => [], 'data' => [7]]);
+
+    expect(fn () => fakeMicroBgTransport($http)->callList('getPartners', [], PartnerResult::class))
+        ->toThrow(InvalidResponseException::class, 'Each collection entry must be an object');
+});
+
+it('callOne rejects a list where a single object is expected', function () {
+    $http = FakeHttpClient::withJson(['status' => 1, 'errors' => [], 'data' => [['id' => 1]]]);
+
+    expect(fn () => fakeMicroBgTransport($http)->callOne('insertPartner', [], null, PartnerResult::class))
+        ->toThrow(InvalidResponseException::class, 'Expected a single object for insertPartner');
 });
