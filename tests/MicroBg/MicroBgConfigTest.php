@@ -32,9 +32,9 @@ it('rejects invalid input', function (string $apiId, string $secret, string $ent
 ]);
 
 it('refuses to be serialized', function () {
-    expect(fn () => serialize(new MicroBgConfig('a', 'k')))->toThrow(LogicException::class);
+    expect(fn () => serialize(new MicroBgConfig('a', 'k')))->toThrow(ConfigurationException::class);
 });
 
 it('refuses to be unserialized', function () {
-    expect(fn () => (new MicroBgConfig('a', 'k'))->__unserialize([]))->toThrow(LogicException::class);
+    expect(fn () => (new MicroBgConfig('a', 'k'))->__unserialize([]))->toThrow(ConfigurationException::class);
 });

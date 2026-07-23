@@ -57,7 +57,7 @@ final readonly class WarehouseProConfig
     /** @return array<string, mixed> */
     public function __serialize(): array
     {
-        throw new \LogicException(
+        throw new ConfigurationException(
             'WarehouseProConfig must not be serialized as it may contain an API key'
         );
     }
@@ -65,6 +65,6 @@ final readonly class WarehouseProConfig
     /** @param array<string, mixed> $data */
     public function __unserialize(array $data): void
     {
-        throw new \LogicException('WarehouseProConfig must not be unserialized');
+        throw new ConfigurationException('WarehouseProConfig must not be unserialized');
     }
 }

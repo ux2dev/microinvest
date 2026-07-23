@@ -51,8 +51,8 @@ it('redacts the api key in debug output', function () {
 
 it('refuses to serialize', function () {
     serialize(new WarehouseProConfig('http://127.0.0.1:8700', 'secret'));
-})->throws(LogicException::class);
+})->throws(ConfigurationException::class);
 
 it('refuses to unserialize', function () {
     (new WarehouseProConfig('http://127.0.0.1:8700'))->__unserialize([]);
-})->throws(LogicException::class);
+})->throws(ConfigurationException::class);

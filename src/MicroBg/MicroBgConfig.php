@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ux2Dev\Microinvest\MicroBg;
 
-use LogicException;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 
 /**
@@ -64,12 +63,12 @@ final readonly class MicroBgConfig
     /** @return array<string, mixed> */
     public function __serialize(): array
     {
-        throw new LogicException('MicroBgConfig must not be serialized as it contains a secret key');
+        throw new ConfigurationException('MicroBgConfig must not be serialized as it contains a secret key');
     }
 
     /** @param array<string, mixed> $data */
     public function __unserialize(array $data): void
     {
-        throw new LogicException('MicroBgConfig must not be unserialized');
+        throw new ConfigurationException('MicroBgConfig must not be unserialized');
     }
 }
