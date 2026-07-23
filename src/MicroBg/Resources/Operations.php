@@ -6,6 +6,7 @@ namespace Ux2Dev\Microinvest\MicroBg\Resources;
 
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationDocumentInput;
 use Ux2Dev\Microinvest\Dto\Result\Operations\OperationDocumentResult;
+use Ux2Dev\Microinvest\Enum\CostAllocationMethod;
 use Ux2Dev\Microinvest\Enum\OperationType;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 use Ux2Dev\Microinvest\Http\ResultList;
@@ -86,13 +87,12 @@ final class Operations extends Resource
      * number (acct) or by its id; acct wins when both are given. The value is
      * always excluding VAT.
      *
-     * @param  1|2  $method  1 by value, 2 by quantity
      */
     public function allocateCost(
         float $value,
         ?int $acct = null,
         ?int $id = null,
-        int $method = 1,
+        CostAllocationMethod $method = CostAllocationMethod::ByValue,
         ?int $costAllocationId = null,
     ): OperationDocumentResult {
         if ($acct === null && $id === null) {
@@ -103,7 +103,7 @@ final class Operations extends Resource
             'CostAllocationValue' => round($value, 2),
             'Acct' => $acct,
             'Id' => $id,
-            'CostAllocationMethod' => $method,
+            'CostAllocationMethod' => $method->value,
             'CostAllocationId' => $costAllocationId,
         ], null, OperationDocumentResult::class);
     }

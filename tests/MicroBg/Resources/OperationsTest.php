@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Ux2Dev\Microinvest\Enum\OperationType;
+use Ux2Dev\Microinvest\Enum\StockSign;
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationDocumentInput;
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationLineInput;
 use Ux2Dev\Microinvest\Dto\Input\Payments\PaymentEntryInput;
@@ -43,7 +44,7 @@ it('hydrates a document with its nested lines', function () {
         ->and($operation->lines)->toHaveCount(2)
         ->and($operation->lines[0]->itemId)->toBe(8814)
         ->and($operation->lines[0]->discount)->toBe(3.5)
-        ->and($operation->lines[0]->sign)->toBe(-1)
+        ->and($operation->lines[0]->sign)->toBe(StockSign::Out)
         ->and($operation->lines[1]->priceIn)->toBe(12.57);
 });
 

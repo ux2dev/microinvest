@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Result\Items;
 
 use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
+use Ux2Dev\Microinvest\Enum\CodeType;
 
 /**
  * One extra code or barcode attached to an item, with the quantity ratio
@@ -15,7 +16,7 @@ final class ItemAddCodeResult implements FromMicroBg
     public function __construct(
         public readonly ?int $measureId = null,
         public readonly ?string $code = null,
-        public readonly ?int $codeType = null,
+        public readonly ?CodeType $codeType = null,
         public readonly ?float $ratio = null,
     ) {
     }
@@ -26,7 +27,7 @@ final class ItemAddCodeResult implements FromMicroBg
         return new self(
             measureId: isset($data['MeasureId']) ? (int) $data['MeasureId'] : null,
             code: isset($data['Code']) ? (string) $data['Code'] : null,
-            codeType: isset($data['CodeType']) ? (int) $data['CodeType'] : null,
+            codeType: isset($data['CodeType']) ? CodeType::tryFrom((int) $data['CodeType']) : null,
             ratio: isset($data['Ratio']) ? (float) $data['Ratio'] : null,
         );
     }

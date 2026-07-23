@@ -6,6 +6,7 @@ namespace Ux2Dev\Microinvest\Dto\Result\Partners;
 
 use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\FromWarehousePro;
+use Ux2Dev\Microinvest\Enum\PartnerType;
 
 /**
  * A partner row (table partners), as returned by either backend.
@@ -40,7 +41,7 @@ final class PartnerResult implements FromWarehousePro, FromMicroBg
         public readonly ?string $bankVatAcct,
         public readonly ?int $priceGroup,
         public readonly ?float $discount,
-        public readonly ?int $type,
+        public readonly ?PartnerType $type,
         public readonly ?bool $isVeryUsed,
         public readonly ?int $userId,
         public readonly ?int $groupId,
@@ -91,7 +92,7 @@ final class PartnerResult implements FromWarehousePro, FromMicroBg
             bankVatAcct: isset($data['bank_vat_acct']) ? (string) $data['bank_vat_acct'] : null,
             priceGroup: isset($data['price_group']) ? (int) $data['price_group'] : null,
             discount: isset($data['discount']) ? (float) $data['discount'] : null,
-            type: isset($data['type']) ? (int) $data['type'] : null,
+            type: isset($data['type']) ? PartnerType::tryFrom((int) $data['type']) : null,
             isVeryUsed: isset($data['is_very_used']) ? (bool) $data['is_very_used'] : null,
             userId: isset($data['user_id']) ? (int) $data['user_id'] : null,
             groupId: isset($data['group_id']) ? (int) $data['group_id'] : null,
@@ -132,7 +133,7 @@ final class PartnerResult implements FromWarehousePro, FromMicroBg
             bankVatAcct: null,
             priceGroup: isset($data['PriceGroup']) ? (int) $data['PriceGroup'] : null,
             discount: isset($data['Discount']) ? (float) $data['Discount'] : null,
-            type: isset($data['PartnerType']) ? (int) $data['PartnerType'] : null,
+            type: isset($data['PartnerType']) ? PartnerType::tryFrom((int) $data['PartnerType']) : null,
             isVeryUsed: null,
             userId: null,
             groupId: isset($data['GroupId']) ? (int) $data['GroupId'] : null,

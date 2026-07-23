@@ -13,6 +13,7 @@ use Ux2Dev\Microinvest\Dto\Result\NomenclatureGroupResult;
 use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentTypeResult;
 use Ux2Dev\Microinvest\Dto\Result\Store\StoreResult;
 use Ux2Dev\Microinvest\Dto\Result\VatGroups\VatGroupResult;
+use Ux2Dev\Microinvest\Enum\GroupModule;
 use Ux2Dev\Microinvest\Http\ResultList;
 use Ux2Dev\Microinvest\MicroBg\Resources\Company;
 use Ux2Dev\Microinvest\MicroBg\Resources\Groups;
@@ -102,13 +103,13 @@ final class MicroBgClient implements Client
     /** @return ResultList<NomenclatureGroupResult> */
     public function listItemGroups(): ResultList
     {
-        return $this->groups()->list('Items');
+        return $this->groups()->list(GroupModule::Items);
     }
 
     /** @return ResultList<NomenclatureGroupResult> */
     public function listPartnerGroups(): ResultList
     {
-        return $this->groups()->list('Partners');
+        return $this->groups()->list(GroupModule::Partners);
     }
 
     /** @return ResultList<VatGroupResult> */

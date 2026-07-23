@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Result\Operations;
 
 use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
+use Ux2Dev\Microinvest\Enum\StockSign;
 
 /**
  * One item line of a micro.bg operation.
@@ -26,7 +27,7 @@ final class OperationLineResult implements FromMicroBg
         public readonly ?float $discount = null,
         public readonly ?string $note = null,
         /** -1 the item leaves stock, 1 it enters stock. */
-        public readonly ?int $sign = null,
+        public readonly ?StockSign $sign = null,
         public readonly ?float $taxValue = null,
     ) {
     }
@@ -43,7 +44,7 @@ final class OperationLineResult implements FromMicroBg
             vatOut: isset($data['VatOut']) ? (float) $data['VatOut'] : null,
             discount: isset($data['Discount']) ? (float) $data['Discount'] : null,
             note: isset($data['Note']) ? (string) $data['Note'] : null,
-            sign: isset($data['Sign']) ? (int) $data['Sign'] : null,
+            sign: isset($data['Sign']) ? StockSign::tryFrom((int) $data['Sign']) : null,
             taxValue: isset($data['TaxValue']) ? (float) $data['TaxValue'] : null,
         );
     }

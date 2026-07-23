@@ -14,6 +14,10 @@ use Ux2Dev\Microinvest\Dto\Result\Partners\PartnerResult;
 use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentTypeResult;
 use Ux2Dev\Microinvest\Dto\Result\Store\StoreResult;
 use Ux2Dev\Microinvest\Dto\Result\VatGroups\VatGroupResult;
+use Ux2Dev\Microinvest\Enum\CodeType;
+use Ux2Dev\Microinvest\Enum\FiscalMode;
+use Ux2Dev\Microinvest\Enum\PartnerType;
+use Ux2Dev\Microinvest\Enum\PaymentMethod;
 
 it('hydrates a partner from the micro.bg dialect', function () {
     // Verbatim from Api_v1.4.pdf, section 3.1.
@@ -35,7 +39,7 @@ it('hydrates a partner from the micro.bg dialect', function () {
         ->and($p->taxId)->toBe('101744907')
         ->and($p->vatId)->toBe('BG101744907')
         ->and($p->priceGroup)->toBe(2)
-        ->and($p->type)->toBe(1)
+        ->and($p->type)->toBe(PartnerType::Client)
         ->and($p->groupId)->toBe(38)
         ->and($p->groupPath)->toBe('-1')
         ->and($p->dateUpdated)->toBe('2016-07-29 12:09:15')
@@ -73,7 +77,7 @@ it('hydrates an item including its additional codes', function () {
         ->and($i->addCodes[0])->toBeInstanceOf(ItemAddCodeResult::class)
         ->and($i->addCodes[0]->measureId)->toBe(108)
         ->and($i->addCodes[0]->code)->toBe('7777')
-        ->and($i->addCodes[0]->codeType)->toBe(1)
+        ->and($i->addCodes[0]->codeType)->toBe(CodeType::Code)
         ->and($i->addCodes[0]->ratio)->toBe(6.0)
         // Warehouse Pro only.
         ->and($i->catalog1)->toBeNull()
@@ -105,8 +109,8 @@ it('hydrates the lookups', function () {
         ->and($vat->name)->toBe('ДДС(Г) 9%')
         ->and($vat->vatValue)->toBe(9.0)
         ->and($payment->id)->toBe(3)
-        ->and($payment->paymentMethod)->toBe(3)
-        ->and($payment->fiscalMode)->toBe(2)
+        ->and($payment->paymentMethod)->toBe(PaymentMethod::Card)
+        ->and($payment->fiscalMode)->toBe(FiscalMode::NonFiscalReceipt)
         ->and($payment->deleted)->toBeFalse()
         ->and($object->id)->toBe(2)
         ->and($object->name)->toBe('Склад')
@@ -122,7 +126,7 @@ it('serialises a partner to the micro.bg dialect', function () {
         city: 'СОФИЯ',
         taxId: '831826092',
         priceGroup: 2,
-        type: 1,
+        type: PartnerType::Client,
         contactPerson: 'Иван',
     );
 

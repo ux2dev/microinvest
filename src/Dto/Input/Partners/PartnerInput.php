@@ -6,6 +6,7 @@ namespace Ux2Dev\Microinvest\Dto\Input\Partners;
 
 use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;
 use Ux2Dev\Microinvest\Contracts\Dto\ToWarehousePro;
+use Ux2Dev\Microinvest\Enum\PartnerType;
 
 /**
  * Input DTO for creating (POST /Partner) or updating (PUT /Partner) a partner.
@@ -38,7 +39,7 @@ final readonly class PartnerInput implements ToWarehousePro, ToMicroBg
         public ?string $bankVatAcct = null,
         public ?int $priceGroup = null,
         public ?float $discount = null,
-        public ?int $type = null,
+        public ?PartnerType $type = null,
         public ?bool $isVeryUsed = null,
         public ?int $userId = null,
         public ?int $groupId = null,
@@ -82,7 +83,7 @@ final readonly class PartnerInput implements ToWarehousePro, ToMicroBg
         if ($this->bankVatAcct !== null) $out['bank_vat_acct'] = $this->bankVatAcct;
         if ($this->priceGroup !== null) $out['price_group'] = $this->priceGroup;
         if ($this->discount !== null) $out['discount'] = $this->discount;
-        if ($this->type !== null) $out['type'] = $this->type;
+        if ($this->type !== null) $out['type'] = $this->type->value;
         if ($this->isVeryUsed !== null) $out['is_very_used'] = $this->isVeryUsed;
         if ($this->userId !== null) $out['user_id'] = $this->userId;
         if ($this->groupId !== null) $out['group_id'] = $this->groupId;
@@ -118,7 +119,7 @@ final readonly class PartnerInput implements ToWarehousePro, ToMicroBg
         if ($this->vatId !== null) $out['VatID'] = $this->vatId;
         if ($this->priceGroup !== null) $out['PriceGroup'] = $this->priceGroup;
         if ($this->discount !== null) $out['Discount'] = $this->discount;
-        if ($this->type !== null) $out['PartnerType'] = $this->type;
+        if ($this->type !== null) $out['PartnerType'] = $this->type->value;
         if ($this->cardNumber !== null) $out['CardNumber'] = $this->cardNumber;
         if ($this->groupId !== null) $out['GroupId'] = $this->groupId;
         if ($this->deleted !== null) $out['Deleted'] = $this->deleted;

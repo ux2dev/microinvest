@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use Ux2Dev\Microinvest\Enum\FiscalMode;
+use Ux2Dev\Microinvest\Enum\GroupDeleteMode;
+use Ux2Dev\Microinvest\Enum\GroupModule;
+use Ux2Dev\Microinvest\Enum\PaymentMethod;
+
 it('routes each lookup to its documented function name', function (string $call, array $args, string $function, array $parameters) {
     $http = microBgOk([]);
 
@@ -11,8 +16,8 @@ it('routes each lookup to its documented function name', function (string $call,
     expect(microBgPayload($http)['functionName'])->toBe($function)
         ->and(microBgPayload($http)['parameters'])->toBe($parameters);
 })->with([
-    ['groups.list', ['Items'], 'getGroups', ['Module' => 'Items']],
-    ['groups.list', ['Partners'], 'getGroups', ['Module' => 'Partners']],
+    ['groups.list', [GroupModule::Items], 'getGroups', ['Module' => 'Items']],
+    ['groups.list', [GroupModule::Partners], 'getGroups', ['Module' => 'Partners']],
     ['taxGroups.list', [], 'getTaxGroups', []],
     ['payments.types', [], 'getPaymentTypes', []],
     ['objects.list', [], 'getObjects', []],
@@ -35,7 +40,7 @@ it('hydrates the group tree', function () {
 it('creates a group under a parent', function () {
     $http = microBgOk(['id' => 15310, 'Name' => 'Спортни стоки', 'Path' => 'ААЕ']);
 
-    $group = fakeMicroBg($http)->groups()->create('Items', 'Спортни стоки', parentId: 2345);
+    $group = fakeMicroBg($http)->groups()->create(GroupModule::Items, 'Спортни стоки', parentId: 2345);
 
     expect($group->id)->toBe(15310)
         ->and($group->path)->toBe('ААЕ')
@@ -49,7 +54,7 @@ it('creates a group under a parent', function () {
 it('creates a top level group when neither parent nor path is given', function () {
     $http = microBgOk(['id' => 1, 'Name' => 'Ново']);
 
-    fakeMicroBg($http)->groups()->create('Partners', 'Ново');
+    fakeMicroBg($http)->groups()->create(GroupModule::Partners, 'Ново');
 
     expect(microBgPayload($http)['parameters'])->toBe(['Module' => 'Partners']);
 });
@@ -57,7 +62,7 @@ it('creates a top level group when neither parent nor path is given', function (
 it('renames a group', function () {
     $http = microBgOk(['id' => 1765, 'Name' => 'Спортни стоки']);
 
-    fakeMicroBg($http)->groups()->rename('Items', 1765, 'Спортни стоки');
+    fakeMicroBg($http)->groups()->rename(GroupModule::Items, 1765, 'Спортни стоки');
 
     expect(microBgPayload($http))->toBe([
         'functionName' => 'renameGroup',
@@ -74,9 +79,9 @@ it('deletes a group by id, by path or wholesale', function (array $args, array $
     expect(microBgPayload($http)['functionName'])->toBe('deleteGroup')
         ->and(microBgPayload($http)['parameters'])->toBe($parameters);
 })->with([
-    [['Items', 'ById', 1765], ['Module' => 'Items', 'Mode' => 'ById', 'Id' => 1765]],
-    [['Items', 'ByPath', null, 'ААВ'], ['Module' => 'Items', 'Mode' => 'ByPath', 'Path' => 'ААВ']],
-    [['Items', 'All'], ['Module' => 'Items', 'Mode' => 'All']],
+    [[GroupModule::Items, GroupDeleteMode::ById, 1765], ['Module' => 'Items', 'Mode' => 'ById', 'Id' => 1765]],
+    [[GroupModule::Items, GroupDeleteMode::ByPath, null, 'ААВ'], ['Module' => 'Items', 'Mode' => 'ByPath', 'Path' => 'ААВ']],
+    [[GroupModule::Items, GroupDeleteMode::All], ['Module' => 'Items', 'Mode' => 'All']],
 ]);
 
 it('hydrates the tax groups, payment types and objects', function () {
@@ -85,7 +90,8 @@ it('hydrates the tax groups, payment types and objects', function () {
     $objects = fakeMicroBg(microBgOk([['id' => 2, 'Name' => 'Склад', 'Address' => 'София', 'PriceGroup' => 1, 'Deleted' => 0]]))->listObjects();
 
     expect($tax->first()->vatValue)->toBe(20.0)
-        ->and($payments->first()->fiscalMode)->toBe(3)
+        ->and($payments->first()->paymentMethod)->toBe(PaymentMethod::Cash)
+        ->and($payments->first()->fiscalMode)->toBe(FiscalMode::PrintNothing)
         ->and($objects->first()->address)->toBe('София');
 });
 

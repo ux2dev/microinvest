@@ -5,12 +5,13 @@ declare(strict_types=1);
 use Ux2Dev\Microinvest\Dto\Input\Partners\PartnerInput;
 use Ux2Dev\Microinvest\Dto\Result\NomenclatureGroupResult;
 use Ux2Dev\Microinvest\Dto\Result\Partners\PartnerResult;
+use Ux2Dev\Microinvest\Enum\PartnerType;
 use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('lists partners with filters', function () {
     $http = FakeHttpClient::withJson([['id' => 3108, 'company' => 'Microinvest EOOD', 'type' => 2]]);
 
-    $list = fakeWarehousePro($http)->partners()->list(company: 'Micro*', type: 2);
+    $list = fakeWarehousePro($http)->partners()->list(company: 'Micro*', type: PartnerType::Supplier);
 
     $uri = (string) $http->lastRequest()->getUri();
 

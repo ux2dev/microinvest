@@ -8,6 +8,7 @@ use Ux2Dev\Microinvest\Contracts\PartnerRepository;
 use Ux2Dev\Microinvest\Dto\Input\Partners\PartnerInput;
 use Ux2Dev\Microinvest\Dto\Result\NomenclatureGroupResult;
 use Ux2Dev\Microinvest\Dto\Result\Partners\PartnerResult;
+use Ux2Dev\Microinvest\Enum\PartnerType;
 use Ux2Dev\Microinvest\Http\ResultList;
 
 final class Partners extends Resource implements PartnerRepository
@@ -18,7 +19,7 @@ final class Partners extends Resource implements PartnerRepository
         ?string $code = null,
         ?int $groupId = null,
         ?string $vatId = null,
-        ?int $type = null,
+        ?PartnerType $type = null,
         ?int $page = null,
         ?int $pageSize = null,
         array $filters = [],
@@ -28,7 +29,7 @@ final class Partners extends Resource implements PartnerRepository
             'code' => $code,
             'group_id' => $groupId,
             'vat_id' => $vatId,
-            'type' => $type,
+            'type' => $type?->value,
             'page' => $page,
             'page_size' => $pageSize,
         ], $filters), PartnerResult::class);

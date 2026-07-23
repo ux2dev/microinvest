@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Ux2Dev\Microinvest\Dto\Input\Payments\PaymentInput;
 use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentResult;
 use Ux2Dev\Microinvest\Dto\Result\Payments\PaymentTypeResult;
+use Ux2Dev\Microinvest\Enum\PaymentMethod;
 use Ux2Dev\Microinvest\Tests\Http\FakeHttpClient;
 
 it('lists payments by range filters', function () {
@@ -69,5 +70,5 @@ it('lists payment types', function () {
 
     expect((string) $http->lastRequest()->getUri())->toBe('http://127.0.0.1:8700/PaymentTypes')
         ->and($types->first())->toBeInstanceOf(PaymentTypeResult::class)
-        ->and($types->first()->paymentMethod)->toBe(1);
+        ->and($types->first()->paymentMethod)->toBe(PaymentMethod::Cash);
 });
