@@ -296,7 +296,7 @@ All SDK exceptions extend `Ux2Dev\Microinvest\Exception\MicroinvestException`:
 
 | Exception | When it is thrown |
 |-----------|-------------------|
-| `ConfigurationException` | Invalid `WarehouseProConfig` input, unknown connection or driver |
+| `ConfigurationException` | Invalid config input, unknown connection or driver, a call missing a required identifier, or an attempt to serialize a config |
 | `TransportException`     | PSR-18 client failure (network error, timeout) |
 | `InvalidResponseException` | Empty body, malformed JSON, unexpected shape |
 | `ApiException` | HTTP non-2xx. Carries `httpStatus`, `apiCode`, `apiMessage`, and the decoded `body`. |
