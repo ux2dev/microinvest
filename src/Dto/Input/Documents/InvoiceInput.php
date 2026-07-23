@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Input\Documents;
 
 use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;
+use Ux2Dev\Microinvest\Enum\DocumentType;
 
 /**
  * An invoice, credit note or debit note to issue for an existing micro.bg
@@ -19,7 +20,7 @@ final readonly class InvoiceInput implements ToMicroBg
         public ?int $operationId = null,
         public ?int $extAppDocId = null,
         /** 1 invoice, 5 credit note, 15 debit note. Defaults to an invoice. */
-        public ?int $documentType = null,
+        public ?DocumentType $documentType = null,
         public ?string $date = null,
         /** Date of the taxable event. */
         public ?string $dateEvent = null,
@@ -41,7 +42,7 @@ final readonly class InvoiceInput implements ToMicroBg
         $out = [];
         if ($this->operationId !== null) $out['OperationId'] = $this->operationId;
         if ($this->extAppDocId !== null) $out['ExtAppDocId'] = $this->extAppDocId;
-        if ($this->documentType !== null) $out['DocumentType'] = $this->documentType;
+        if ($this->documentType !== null) $out['DocumentType'] = $this->documentType->value;
         if ($this->date !== null) $out['Date'] = $this->date;
         if ($this->dateEvent !== null) $out['DateEvent'] = $this->dateEvent;
         if ($this->dueDate !== null) $out['DueDate'] = $this->dueDate;

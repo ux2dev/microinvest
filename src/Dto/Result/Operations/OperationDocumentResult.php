@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ux2Dev\Microinvest\Dto\Result\Operations;
 
 use Ux2Dev\Microinvest\Contracts\Dto\FromMicroBg;
+use Ux2Dev\Microinvest\Enum\OperationType;
 
 /**
  * A micro.bg operation: a document header plus its item lines.
@@ -21,7 +22,7 @@ final class OperationDocumentResult implements FromMicroBg
         /** Running document number. */
         public readonly ?int $acct = null,
         public readonly ?string $dateIssued = null,
-        public readonly ?int $operationType = null,
+        public readonly ?OperationType $operationType = null,
         public readonly ?int $objectId = null,
         public readonly ?int $partnerId = null,
         /** Total excluding VAT. */
@@ -52,7 +53,7 @@ final class OperationDocumentResult implements FromMicroBg
             id: isset($data['id']) ? (int) $data['id'] : null,
             acct: isset($data['Acct']) ? (int) $data['Acct'] : null,
             dateIssued: isset($data['DateIssued']) ? (string) $data['DateIssued'] : null,
-            operationType: isset($data['OperType']) ? (int) $data['OperType'] : null,
+            operationType: isset($data['OperType']) ? OperationType::tryFrom((int) $data['OperType']) : null,
             objectId: isset($data['ObjectId']) ? (int) $data['ObjectId'] : null,
             partnerId: isset($data['PartnerId']) ? (int) $data['PartnerId'] : null,
             amount: isset($data['Amount']) ? (float) $data['Amount'] : null,

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Ux2Dev\Microinvest\Enum\OperationType;
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationDocumentInput;
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationLineInput;
 use Ux2Dev\Microinvest\Dto\Input\Payments\PaymentEntryInput;
@@ -10,7 +11,7 @@ use Ux2Dev\Microinvest\Exception\ConfigurationException;
 it('lists operations of one type', function () {
     $http = microBgOk([]);
 
-    fakeMicroBg($http)->operations()->list(operationType: 2, fromDate: '2018-02-01 05:00:00', limit: 50);
+    fakeMicroBg($http)->operations()->list(operationType: OperationType::Sale, fromDate: '2018-02-01 05:00:00', limit: 50);
 
     expect(microBgPayload($http))->toBe([
         'functionName' => 'getOperations',
@@ -32,7 +33,7 @@ it('hydrates a document with its nested lines', function () {
         ],
     ]]);
 
-    $operation = fakeMicroBg($http)->operations()->list(operationType: 2)->first();
+    $operation = fakeMicroBg($http)->operations()->list(operationType: OperationType::Sale)->first();
 
     expect($operation->id)->toBe(81483)
         ->and($operation->acct)->toBe(616)
@@ -50,7 +51,7 @@ it('saves a sale with lines and a payment', function () {
     $http = microBgOk(['id' => 82633, 'Acct' => 816, 'Amount' => 8.33, 'ExtAppDocId' => 326573]);
 
     $result = fakeMicroBg($http)->operations()->save(new OperationDocumentInput(
-        operationType: 2,
+        operationType: OperationType::Sale,
         objectId: 6,
         lines: [
             new OperationLineInput(itemId: 8814, qtty: 1.0, price: 12.0),
@@ -89,7 +90,7 @@ it('keys the save on the external id when asked', function () {
     $http = microBgOk(['id' => 1]);
 
     fakeMicroBg($http)->operations()->save(new OperationDocumentInput(
-        operationType: 2,
+        operationType: OperationType::Sale,
         objectId: 6,
         lines: [new OperationLineInput(itemId: 1, qtty: 1.0)],
         extAppDocId: 999,
@@ -100,7 +101,7 @@ it('keys the save on the external id when asked', function () {
 
 it('refuses an idempotent save without an external id', function () {
     $input = new OperationDocumentInput(
-        operationType: 2,
+        operationType: OperationType::Sale,
         objectId: 6,
         lines: [new OperationLineInput(itemId: 1, qtty: 1.0)],
     );

@@ -6,6 +6,7 @@ namespace Ux2Dev\Microinvest\Dto\Input\Operations;
 
 use Ux2Dev\Microinvest\Contracts\Dto\ToMicroBg;
 use Ux2Dev\Microinvest\Dto\Input\Payments\PaymentEntryInput;
+use Ux2Dev\Microinvest\Enum\OperationType;
 
 /**
  * A micro.bg operation to create or edit through saveOperation. micro.bg only.
@@ -24,7 +25,7 @@ final readonly class OperationDocumentInput implements ToMicroBg
      */
     public function __construct(
         /** 2 sale, 19 order, 34 customer claim, 1 delivery, 11 write-off, 12 delivery request, 26 debit note, 27 credit note, 39 supplier claim. */
-        public int $operationType,
+        public OperationType $operationType,
         public int $objectId,
         public array $lines,
         /** Required except on credit/debit notes, where the source invoice decides. */
@@ -57,7 +58,7 @@ final readonly class OperationDocumentInput implements ToMicroBg
     public function toMicroBgArray(): array
     {
         $out = [
-            'OperType' => $this->operationType,
+            'OperType' => $this->operationType->value,
             'ObjectId' => $this->objectId,
             'Items' => array_map(
                 static fn (OperationLineInput $line): array => $line->toMicroBgArray(),

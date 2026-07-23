@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Ux2Dev\Microinvest\Dto\Input\Documents\InvoiceInput;
+use Ux2Dev\Microinvest\Enum\DocumentType;
 use Ux2Dev\Microinvest\Dto\Input\Payments\PaymentEntryInput;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 
@@ -57,7 +58,7 @@ it('issues an invoice for an operation', function () {
 
     $invoice = fakeMicroBg($http)->invoices()->create(new InvoiceInput(
         operationId: 2093045,
-        documentType: 1,
+        documentType: DocumentType::Invoice,
         date: '2024-02-28',
         bankAccountId: 195,
         dealPlace: 'Враца',

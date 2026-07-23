@@ -6,6 +6,7 @@ namespace Ux2Dev\Microinvest\MicroBg\Resources;
 
 use Ux2Dev\Microinvest\Dto\Input\Operations\OperationDocumentInput;
 use Ux2Dev\Microinvest\Dto\Result\Operations\OperationDocumentResult;
+use Ux2Dev\Microinvest\Enum\OperationType;
 use Ux2Dev\Microinvest\Exception\ConfigurationException;
 use Ux2Dev\Microinvest\Http\ResultList;
 
@@ -16,12 +17,12 @@ use Ux2Dev\Microinvest\Http\ResultList;
 final class Operations extends Resource
 {
     /**
-     * @param  int  $operationType  required by the API; see OperationDocumentResult
+     * @param  OperationType  $operationType  required by the API; see OperationDocumentResult
      * @param  array<string, mixed>  $filters
      * @return ResultList<OperationDocumentResult>
      */
     public function list(
-        int $operationType,
+        OperationType $operationType,
         ?string $fromDate = null,
         ?int $fromId = null,
         ?int $fromExtApiDocId = null,
@@ -31,7 +32,7 @@ final class Operations extends Resource
         array $filters = [],
     ): ResultList {
         return $this->transport->callList('getOperations', array_merge([
-            'OperType' => $operationType,
+            'OperType' => $operationType->value,
             'fromDate' => $fromDate,
             'fromId' => $fromId,
             'fromExtApiDocId' => $fromExtApiDocId,
